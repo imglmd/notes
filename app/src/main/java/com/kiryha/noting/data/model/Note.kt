@@ -1,4 +1,6 @@
 package com.kiryha.noting.data.model
 
-class Note {
-}
+data class Note(
+    val id: Int,
+    val text: String
+)

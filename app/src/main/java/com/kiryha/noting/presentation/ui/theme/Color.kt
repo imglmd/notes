@@ -1,4 +1,4 @@
-package com.kiryha.noting.ui.theme
+package com.kiryha.noting.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

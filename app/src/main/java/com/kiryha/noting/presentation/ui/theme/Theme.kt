@@ -1,6 +1,5 @@
-package com.kiryha.noting.ui.theme
+package com.kiryha.noting.presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -68,7 +67,7 @@ fun NotingTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = getTypography(),
         content = content
     )
 }

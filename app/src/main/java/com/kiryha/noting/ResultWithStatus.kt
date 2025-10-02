@@ -1,4 +1,6 @@
 package com.kiryha.noting
 
-class ResultWithStatus {
-}
+data class ResultWithStatus<T> (
+    val item: T,
+    val status: NoteStatus
+)
