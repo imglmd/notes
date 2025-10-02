@@ -21,8 +21,8 @@ fun getTypography(): Typography{
         titleLarge = TextStyle(
             fontFamily = NType87,
             fontWeight = FontWeight.Normal,
-            fontSize = 22.sp,
-            lineHeight = 28.sp,
+            fontSize = 30.sp,
+            lineHeight = 40.sp,
             letterSpacing = 0.sp
         ),
     )
