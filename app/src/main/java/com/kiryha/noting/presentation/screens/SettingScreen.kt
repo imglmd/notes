@@ -18,10 +18,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.kiryha.noting.MainScreen
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.components.ProfileSection
 import com.kiryha.noting.presentation.components.RadioButtonGroup
+import com.kiryha.noting.presentation.navigation.MainScreen
 
 @Composable
 fun SettingScreen(

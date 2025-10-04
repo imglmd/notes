@@ -1,6 +1,5 @@
 package com.kiryha.noting.presentation.screens
 
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,14 +19,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.kiryha.noting.NoteScreen
 import com.kiryha.noting.domain.status.NoteStatus
-
-import com.kiryha.noting.SettingScreen
-import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NoteItem
 import com.kiryha.noting.presentation.components.NotingTopAppBar
+import com.kiryha.noting.presentation.navigation.NoteScreen
+import com.kiryha.noting.presentation.navigation.SettingScreen
+import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
