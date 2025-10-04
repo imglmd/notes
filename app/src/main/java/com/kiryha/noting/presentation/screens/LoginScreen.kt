@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.ui.screens
+package com.kiryha.noting.presentation.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

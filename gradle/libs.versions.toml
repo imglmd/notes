@@ -9,6 +9,7 @@ lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
 composeBom = "2024.09.00"
 composeNavigation = "2.9.3"
+room = "2.8.1"
 serialization = "1.6.3"
 
 [libraries]

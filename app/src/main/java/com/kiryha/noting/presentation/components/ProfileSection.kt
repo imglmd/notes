@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.ui.components
+package com.kiryha.noting.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

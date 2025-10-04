@@ -1,4 +1,4 @@
-package com.kiryha.noting
+package com.kiryha.noting.domain.status
 
 data class ResultWithStatus<T> (
     val item: T,
