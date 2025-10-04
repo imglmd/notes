@@ -23,16 +23,24 @@ fun NoteItem(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
             .clickable(onClick = onNoteClick)
-            .padding(7.dp),
+            .padding(horizontal = 7.dp, vertical = 3.dp),
         contentAlignment = Alignment.Center
     ) {
         Column {
-            Text(note.text,)
+            Text(
+                note.text,
+                )
 
             Row {
-                Text(note.date,
-                    modifier = Modifier.weight(1f))
-                Text(text = note.id.toString())
+                Text(
+                    note.date,
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    note.id.toString(),
+                    color = MaterialTheme.colorScheme.secondary
+                    )
             } }
 
     }
