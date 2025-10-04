@@ -9,4 +9,9 @@ data class Note(
     val id: Int = 0,
     val text: String,
     val date: String
-)
+) {
+    fun doesMatchSearchQuery(query: String): Boolean {
+        if (query.isBlank()) return true
+        return text.contains(query, ignoreCase = true) || date.contains(query, ignoreCase = true)
+    }
+}

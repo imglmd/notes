@@ -23,7 +23,6 @@ fun NotingTopAppBar(
     titleText: String = "",
     onBackClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
-    modifier: Modifier = Modifier.fillMaxWidth()
 ) {
     TopAppBar(
         colors = topAppBarColors(
@@ -33,14 +32,10 @@ fun NotingTopAppBar(
         navigationIcon ={
             if (showBackButton){
                 IconButton(onClick = onBackClick) {
-                    /*Icon(
-                        imageVector = Icons.Defa,
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        contentDescription = "Back Button"
-                    )*/
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = null
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        contentDescription = "Back Button"
                     )
                 }
             }
