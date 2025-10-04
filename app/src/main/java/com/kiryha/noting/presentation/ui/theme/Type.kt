@@ -21,10 +21,31 @@ fun getTypography(): Typography{
         titleLarge = TextStyle(
             fontFamily = NType87,
             fontWeight = FontWeight.Normal,
-            fontSize = 30.sp,
-            lineHeight = 40.sp,
+            fontSize = 36.sp,
+            lineHeight = 42.sp,
             letterSpacing = 0.sp
         ),
+        labelSmall = TextStyle(
+            fontFamily = NType87,
+            fontWeight = FontWeight.Normal,
+            fontSize = 20.sp,
+            lineHeight = 25.sp,
+            letterSpacing = 0.sp
+        ),
+        labelLarge = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Normal,
+            fontSize = 20.sp,
+            lineHeight = 26.sp,
+            letterSpacing = 0.5.sp
+        ),
+        labelMedium = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Normal,
+            fontSize = 17.sp,
+            lineHeight = 20.sp,
+            letterSpacing = 0.5.sp
+        )
     )
 }
 

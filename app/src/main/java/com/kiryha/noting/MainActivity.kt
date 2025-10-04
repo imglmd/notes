@@ -13,8 +13,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.kiryha.noting.data.model.Note
 import com.kiryha.noting.presentation.ui.screens.MainScreen
+import com.kiryha.noting.presentation.ui.screens.NoteScreen
+import com.kiryha.noting.presentation.ui.screens.SettingScreen
 import com.kiryha.noting.presentation.ui.theme.NotingTheme
+import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -23,10 +30,34 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NotingTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {innerPadding ->
-                    MainScreen()
+                val navController = rememberNavController()
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = MainScreen
+                    ) {
+                        composable<MainScreen> {
+                            MainScreen(navController = navController)
+                        }
+                        composable<NoteScreen> {
+                            NoteScreen()
+                        }
+                        composable<SettingScreen> {
+                            SettingScreen(navController = navController)
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+
+@Serializable
+object MainScreen
+
+@Serializable
+object NoteScreen
+
+@Serializable
+object SettingScreen
