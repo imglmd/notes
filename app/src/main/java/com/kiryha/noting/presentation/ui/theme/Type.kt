@@ -45,7 +45,14 @@ fun getTypography(): Typography{
             fontSize = 17.sp,
             lineHeight = 20.sp,
             letterSpacing = 0.5.sp
-        )
+        ),
+        titleMedium = TextStyle(
+            fontFamily = NType87,
+            fontWeight = FontWeight.Normal,
+            fontSize = 32.sp,
+            lineHeight = 38.sp,
+            letterSpacing = 0.sp
+        ),
     )
 }
 

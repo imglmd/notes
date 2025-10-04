@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.kiryha.noting.data.model.Note
 import com.kiryha.noting.presentation.ui.screens.MainScreen
 import com.kiryha.noting.presentation.ui.screens.NoteScreen
@@ -40,7 +41,8 @@ class MainActivity : ComponentActivity() {
                             MainScreen(navController = navController)
                         }
                         composable<NoteScreen> {
-                            NoteScreen()
+                            val args = it.toRoute<NoteScreen>()
+                            NoteScreen(navController = navController, isEdit = args.isEdit)
                         }
                         composable<SettingScreen> {
                             SettingScreen(navController = navController)
@@ -57,7 +59,9 @@ class MainActivity : ComponentActivity() {
 object MainScreen
 
 @Serializable
-object NoteScreen
+data class NoteScreen(
+    val isEdit: Boolean
+)
 
 @Serializable
 object SettingScreen
