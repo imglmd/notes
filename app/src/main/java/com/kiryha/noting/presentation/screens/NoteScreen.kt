@@ -107,6 +107,7 @@ fun NoteScreen(
                             .clip(RoundedCornerShape(5.dp))
                             .verticalScroll(rememberScrollState()),
                         maxLines = Int.MAX_VALUE,
+                        textStyle = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(Modifier.height(5.dp))
                     Button(

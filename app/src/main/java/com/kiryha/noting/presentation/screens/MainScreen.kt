@@ -103,7 +103,7 @@ fun MainScreen(
                                         color = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 8.dp, horizontal = 4.dp)
+                                            .padding(top = 25.dp ,bottom = 5.dp, start = 4.dp)
                                     )
                                 }
                             }
