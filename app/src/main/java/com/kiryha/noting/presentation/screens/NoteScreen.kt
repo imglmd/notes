@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -23,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +37,7 @@ import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.MainScreen
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -52,15 +55,12 @@ fun NoteScreen(
 
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-    LaunchedEffect(noteId) {
+    LaunchedEffect(noteId, selectedNote) {
         if (noteId != null && noteId != -1) {
             viewModel.getNote(noteId)
-        }
-    }
-
-    LaunchedEffect(selectedNote) {
-        if (noteId != null && selectedNote.item.id == noteId) {
-            noteText = selectedNote.item.text
+            if (selectedNote.item.id == noteId) {
+                noteText = selectedNote.item.text
+            }
         }
     }
 
@@ -96,7 +96,9 @@ fun NoteScreen(
                             unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                             focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                             focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -109,20 +111,30 @@ fun NoteScreen(
                     Spacer(Modifier.height(5.dp))
                     Button(
                         onClick = {
-                            val note = if (noteId == null) {
-                                Note(
-                                    text = noteText.trim(),
-                                    date = LocalDateTime.now().format(dateFormatter)
-                                )
+                            val trimmedText = noteText.trim()
+                            if (trimmedText.isEmpty()) {
+                                if (noteId != null && noteId != -1) {
+                                    viewModel.deleteNote(noteId)
+                                }
+                                navController.navigate(MainScreen)
                             } else {
-                                Note(id = noteId, text = noteText.trim(), date = selectedNote.item.date)
-                            }
-                            if (noteText.isEmpty()) {
-                                viewModel.deleteNote(note.id)
-                            } else {
+                                val note = if (noteId == null) {
+                                    Note(
+                                        text = trimmedText,
+                                        date = LocalDateTime.now().format(dateFormatter)
+                                    )
+                                } else {
+                                    Note(
+                                        id = noteId,
+                                        text = trimmedText,
+                                        date = selectedNote.item.date.ifEmpty {
+                                            LocalDateTime.now().format(dateFormatter)
+                                        }
+                                    )
+                                }
                                 viewModel.upsertNote(note)
+                                navController.navigate(MainScreen)
                             }
-                            navController.navigate(MainScreen)
                         },
                         modifier = Modifier
                             .fillMaxWidth()

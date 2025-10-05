@@ -98,7 +98,9 @@ fun MainScreen(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
-                    focusedPlaceholderColor = MaterialTheme.colorScheme.secondary
+                    focusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 singleLine = true
             )

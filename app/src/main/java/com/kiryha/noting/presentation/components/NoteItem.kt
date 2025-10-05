@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -100,40 +101,20 @@ fun NoteItem(
             ),
             shape = RoundedCornerShape(20.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.background,
-                    shape = RoundedCornerShape(20.dp)
-                )
         ) {
             DropdownMenuItem(
-                text = { Text("Edit", color = MaterialTheme.colorScheme.onPrimaryContainer) },
+                text = { Text("Edit", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer) },
                 onClick = {
                     onEditClick()
                     isContextMenuVisible = false
                 },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
             )
             DropdownMenuItem(
-                text = { Text("Delete", color = MaterialTheme.colorScheme.onPrimaryContainer) },
+                text = { Text("Delete", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer) },
                 onClick = {
                     onDeleteClick()
                     isContextMenuVisible = false
                 },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
             )
         }
     }
