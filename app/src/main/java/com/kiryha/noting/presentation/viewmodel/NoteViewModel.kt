@@ -4,16 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kiryha.noting.data.repository.NoteRepository
 import com.kiryha.noting.domain.model.Note
+import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.domain.status.ResultWithStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
@@ -26,19 +28,21 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
             NoteStatus.Success
         )
     )
-    val notes: StateFlow<ResultWithStatus<List<Note>>> = searchText.combine(_notes) { text, result ->
-        if (text.isBlank()) {
-            result
+    val groupedNotes: StateFlow<ResultWithStatus<List<NoteListItem>>> = searchText.combine(_notes) { text, result ->
+        val filteredNotes = if (text.isBlank()){
+            result.item
         } else {
-            ResultWithStatus(
-                item = result.item.filter { it.doesMatchSearchQuery(text) },
-                status = result.status
-            )
+            result.item.filter { it.doesMatchSearchQuery(text) }
         }
+        val groupedItems = groupNotesByMonth(filteredNotes)
+        ResultWithStatus(
+            item = groupedItems,
+            status = result.status
+        )
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        _notes.value
+        ResultWithStatus(emptyList(), NoteStatus.Success)
     )
 
     private val _isSearching = MutableStateFlow(false)
@@ -99,4 +103,50 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
             _status.value = result.status
         }
     }
+
+    private fun groupNotesByMonth(notes: List<Note>): List<NoteListItem> {
+        if (notes.isEmpty()) return emptyList()
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val monthYearFormat = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+        val monthDisplayFormat = SimpleDateFormat("LLLL", Locale("en"))
+
+        val sortedNotes = notes.sortedByDescending {
+            try {
+                dateFormat.parse(it.date)?.time ?: 0
+            } catch (e: Exception) {
+                0L
+            }
+        }
+
+        val groupedMap = sortedNotes.groupBy { note ->
+            try {
+                val date = dateFormat.parse(note.date)
+                monthYearFormat.format(date ?: Date())
+            } catch (e: Exception) {
+                "unknown"
+            }
+        }
+
+        val result = mutableListOf<NoteListItem>()
+        groupedMap.forEach { (monthYear, notesInMonth) ->
+            val displayMonth = try {
+                val date = SimpleDateFormat("yyyy-MM", Locale.getDefault()).parse(monthYear)
+                monthDisplayFormat.format(date ?: Date()).replaceFirstChar { it.uppercase() }
+            } catch (e: Exception) {
+                "unknown"
+            }
+
+            if (notesInMonth.isNotEmpty()) {
+                result.add(NoteListItem.MonthHeader(month = displayMonth, key = monthYear))
+                notesInMonth.forEach { note ->
+                    result.add(NoteListItem.NoteItem(note))
+                }
+            }
+        }
+
+        return result
+    }
+
+
 }

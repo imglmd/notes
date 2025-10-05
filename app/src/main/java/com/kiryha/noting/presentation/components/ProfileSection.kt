@@ -103,7 +103,7 @@ fun ProfileSection(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.clickable(
-                        onClick = { TODO() },
+                        onClick = {  },
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ).padding(horizontal = 15.dp, vertical = 10.dp)
@@ -113,7 +113,7 @@ fun ProfileSection(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.clickable(
-                        onClick = { TODO() },
+                        onClick = {  },
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ).padding(horizontal = 15.dp, vertical = 10.dp)

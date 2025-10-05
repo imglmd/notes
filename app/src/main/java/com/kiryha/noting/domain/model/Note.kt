@@ -2,6 +2,8 @@ package com.kiryha.noting.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Entity
 data class Note(
@@ -12,6 +14,20 @@ data class Note(
 ) {
     fun doesMatchSearchQuery(query: String): Boolean {
         if (query.isBlank()) return true
-        return text.contains(query, ignoreCase = true) || date.contains(query, ignoreCase = true)
+        //поиск по тексту
+        if (text.contains(query, ignoreCase = true)) return true
+        //поиск по дате
+        if (date.contains(query, ignoreCase = true)) return true
+        //поиск по месяцу
+        try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val monthDisplayFormat = SimpleDateFormat("LLLL", Locale("en"))
+            val parsedDate = dateFormat.parse(date)
+            val monthName = monthDisplayFormat.format(parsedDate ?: return false)
+
+            if (monthName.contains(query, ignoreCase = true)) return true
+        } catch (e: Exception) { }
+
+        return false
     }
 }

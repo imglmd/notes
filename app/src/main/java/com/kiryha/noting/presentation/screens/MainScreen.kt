@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NoteItem
@@ -47,9 +48,8 @@ fun MainScreen(
     viewModel: NoteViewModel,
     modifier: Modifier = Modifier.fillMaxSize()
 ) {
-    val notes by viewModel.notes.collectAsState()
+    val groupedNotes by viewModel.groupedNotes.collectAsState()
     val status by viewModel.status.collectAsState()
-    val selectedNote by viewModel.selectedNote.collectAsState()
     val searchText by viewModel.searchText.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
     val scope = rememberCoroutineScope()
@@ -77,15 +77,12 @@ fun MainScreen(
                     viewModel.loadNotes()
                 }
             }
-            else -> {
-
-            }
+            else -> {}
         }
         Column(Modifier
             .fillMaxSize()
             .padding(innerPadding)
             .padding(horizontal = 15.dp)) {
-            Spacer(Modifier.height(20.dp))
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),
                 verticalItemSpacing = 4.dp,
@@ -93,18 +90,39 @@ fun MainScreen(
                 modifier = Modifier.weight(1f),
                 content = {
                     item(span = StaggeredGridItemSpan.FullLine) { NoteSearchBar(searchText, viewModel)}
-                    items(notes.item) { note ->
-                        NoteItem(
-                            note = note,
-                            onNoteClick = { navController.navigate(NoteScreen(note.id)) },
-                            onEditClick = { navController.navigate(NoteScreen(note.id)) },
-                            onDeleteClick = {
-                                viewModel.deleteNote(note.id)
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Заметка удалена")
+                    groupedNotes.item.forEach { listItem ->
+                        when (listItem) {
+                            is NoteListItem.MonthHeader -> {
+                                item(
+                                    key = "header_${listItem.key}",
+                                    span = StaggeredGridItemSpan.FullLine
+                                ) {
+                                    Text(
+                                        text = listItem.month,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp, horizontal = 4.dp)
+                                    )
                                 }
                             }
-                        )
+                            is NoteListItem.NoteItem -> {
+                                item(key = "note_${listItem.note.id}") {
+                                    NoteItem(
+                                        note = listItem.note,
+                                        onNoteClick = { navController.navigate(NoteScreen(listItem.note.id)) },
+                                        onEditClick = { navController.navigate(NoteScreen(listItem.note.id)) },
+                                        onDeleteClick = {
+                                            viewModel.deleteNote(listItem.note.id)
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar("Заметка удалена")
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
                     item(span = StaggeredGridItemSpan.FullLine) {  Spacer(Modifier.height(100.dp)) }
                 }
