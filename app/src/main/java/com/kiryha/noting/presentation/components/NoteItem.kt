@@ -82,7 +82,7 @@ fun NoteItem(
             Text(
                 text = note.text,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Spacer(Modifier.height(8.dp))
             Row {

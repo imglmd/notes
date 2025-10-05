@@ -147,7 +147,6 @@ fun NoteSearchBar(searchText: String, viewModel: NoteViewModel) {
         onValueChange = viewModel::onSearchTextChange,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 20.dp)
             .clip(RoundedCornerShape(100)),
         placeholder = { Text("Search")},
         colors = TextFieldDefaults.colors(
