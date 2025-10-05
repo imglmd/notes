@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -84,26 +85,6 @@ fun MainScreen(
             .fillMaxSize()
             .padding(innerPadding)
             .padding(horizontal = 15.dp)) {
-            TextField(
-                value = searchText,
-                onValueChange = viewModel::onSearchTextChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp)
-                    .clip(RoundedCornerShape(100)),
-                placeholder = { Text("Search")},
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
-                    focusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
-                    focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
-                ),
-                singleLine = true
-            )
             Spacer(Modifier.height(20.dp))
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),
@@ -111,21 +92,21 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.weight(1f),
                 content = {
+                    item(span = StaggeredGridItemSpan.FullLine) { NoteSearchBar(searchText, viewModel)}
                     items(notes.item) { note ->
                         NoteItem(
                             note = note,
                             onNoteClick = { navController.navigate(NoteScreen(note.id)) },
-                            onEditClick = { navController.navigate(NoteScreen(note.id)) }, // Переход на экран редактирования
+                            onEditClick = { navController.navigate(NoteScreen(note.id)) },
                             onDeleteClick = {
-                                viewModel.deleteNote(note.id) // Удаление заметки
+                                viewModel.deleteNote(note.id)
                                 scope.launch {
                                     snackbarHostState.showSnackbar("Заметка удалена")
                                 }
                             }
                         )
                     }
-                    item { Spacer(Modifier.height(100.dp)) }
-                    item { Spacer(Modifier.height(100.dp)) }
+                    item(span = StaggeredGridItemSpan.FullLine) {  Spacer(Modifier.height(100.dp)) }
                 }
             )
         }
@@ -138,4 +119,29 @@ fun MainScreen(
         )
 
     }
+}
+
+
+@Composable
+fun NoteSearchBar(searchText: String, viewModel: NoteViewModel) {
+    TextField(
+        value = searchText,
+        onValueChange = viewModel::onSearchTextChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp)
+            .clip(RoundedCornerShape(100)),
+        placeholder = { Text("Search")},
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+            focusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+            focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+        ),
+        singleLine = true
+    )
 }
