@@ -148,5 +148,14 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         return result
     }
 
+    fun clearAllNotes() {
+        viewModelScope.launch {
+            _notes.value.item.forEach { note ->
+                repository.deleteNote(note.id)
+            }
+            loadNotes()
+        }
+    }
+
 
 }

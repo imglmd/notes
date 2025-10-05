@@ -63,7 +63,7 @@ fun NoteItem(
     Box(
         modifier = Modifier
             .onSizeChanged { itemHeight = with(density) { it.height.toDp() } }
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(10.dp))
             .pointerInput(true) {
                 detectTapGestures(
                     onTap = { onNoteClick() },

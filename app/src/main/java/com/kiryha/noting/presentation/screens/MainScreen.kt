@@ -81,7 +81,7 @@ fun MainScreen(
         }
         Column(Modifier
             .fillMaxSize()
-            .padding(innerPadding)
+            .padding(top = innerPadding.calculateTopPadding())
             .padding(horizontal = 15.dp)) {
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),
