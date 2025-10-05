@@ -75,7 +75,9 @@ fun NoteItem(
                     }
                 )
             }
-            .padding(horizontal = 7.dp, vertical = 3.dp),
+            .padding(top = 8.dp, bottom = 3.dp)
+            .padding(horizontal = 10.dp)
+        ,
         contentAlignment = Alignment.Center
     ) {
         Column {
