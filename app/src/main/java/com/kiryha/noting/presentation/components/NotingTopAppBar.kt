@@ -12,6 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 
@@ -24,6 +28,10 @@ fun NotingTopAppBar(
     onBackClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
 ) {
+    var isBackClicked by remember { mutableStateOf(false) }
+    var isSettingsClicked by remember { mutableStateOf(false) }
+
+
     TopAppBar(
         colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
@@ -31,7 +39,14 @@ fun NotingTopAppBar(
         ),
         navigationIcon ={
             if (showBackButton){
-                IconButton(onClick = onBackClick) {
+                IconButton(
+                    onClick = {
+                        if (!isBackClicked) {
+                            isBackClicked = true
+                            onBackClick()
+                        }
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         tint = MaterialTheme.colorScheme.onBackground,
@@ -42,7 +57,14 @@ fun NotingTopAppBar(
         },
         actions = {
             if (showSettingsButton) {
-                IconButton(onClick = onSettingsClick) {
+                IconButton(
+                    onClick = {
+                        if (!isSettingsClicked) {
+                            isSettingsClicked = true
+                            onSettingsClick()
+                        }
+                    },
+                ) {
                     Icon(
                         imageVector = Icons.Default.Settings,
                         tint = MaterialTheme.colorScheme.onBackground,

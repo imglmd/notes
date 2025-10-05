@@ -52,8 +52,9 @@ fun NoteScreen(
     val status by viewModel.status.collectAsState()
 
     var noteText by remember { mutableStateOf("") }
-
+    var isSaving by remember { mutableStateOf(false) }
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
 
     LaunchedEffect(noteId, selectedNote) {
         if (noteId != null && noteId != -1) {
@@ -69,7 +70,7 @@ fun NoteScreen(
             NotingTopAppBar(
                 titleText = if (noteId == null) "New Note" else "Edit Note",
                 showBackButton = true,
-                onBackClick = { navController.navigate(MainScreen) }
+                onBackClick = { navController.popBackStack()}
             )
         }
     ) { innerPadding ->
@@ -112,12 +113,16 @@ fun NoteScreen(
                     Spacer(Modifier.height(5.dp))
                     Button(
                         onClick = {
+                            if (isSaving) return@Button
+
+                            isSaving = true
+
                             val trimmedText = noteText.trim()
                             if (trimmedText.isEmpty()) {
                                 if (noteId != null && noteId != -1) {
                                     viewModel.deleteNote(noteId)
                                 }
-                                navController.navigate(MainScreen)
+                                navController.popBackStack()
                             } else {
                                 val note = if (noteId == null) {
                                     Note(
@@ -134,7 +139,7 @@ fun NoteScreen(
                                     )
                                 }
                                 viewModel.upsertNote(note)
-                                navController.navigate(MainScreen)
+                                navController.popBackStack()
                             }
                         },
                         modifier = Modifier

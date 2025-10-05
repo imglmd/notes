@@ -35,7 +35,7 @@ fun SettingScreen(
             NotingTopAppBar(
                 titleText = "",
                 showBackButton = true,
-                onBackClick = { navController.navigate(MainScreen) }
+                onBackClick = { navController.popBackStack() }
             )
         }
     ) { innerPadding ->
