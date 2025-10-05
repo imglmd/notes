@@ -1,5 +1,6 @@
 package com.kiryha.noting.presentation.screens
 
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -37,9 +40,12 @@ import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.MainScreen
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import com.kiryha.noting.utils.SwipeDirection
+import com.kiryha.noting.utils.swipeToAction
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.absoluteValue
 
 @Composable
 fun NoteScreen(
@@ -72,7 +78,11 @@ fun NoteScreen(
                 showBackButton = true,
                 onBackClick = { navController.popBackStack()}
             )
-        }
+        },
+        modifier = Modifier.swipeToAction(
+            direction = SwipeDirection.Right,
+            onSwipe = { navController.popBackStack() }
+        )
     ) { innerPadding ->
         when (status) {
             is NoteStatus.Failure -> {

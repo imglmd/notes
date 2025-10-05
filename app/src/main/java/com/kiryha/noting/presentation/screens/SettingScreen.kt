@@ -22,6 +22,8 @@ import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.components.ProfileSection
 import com.kiryha.noting.presentation.components.RadioButtonGroup
 import com.kiryha.noting.presentation.navigation.MainScreen
+import com.kiryha.noting.utils.SwipeDirection
+import com.kiryha.noting.utils.swipeToAction
 
 @Composable
 fun SettingScreen(
@@ -37,7 +39,11 @@ fun SettingScreen(
                 showBackButton = true,
                 onBackClick = { navController.popBackStack() }
             )
-        }
+        },
+        modifier = Modifier.swipeToAction(
+            direction = SwipeDirection.Right,
+            onSwipe = { navController.popBackStack() }
+        )
     ) { innerPadding ->
         Column(
             modifier = Modifier

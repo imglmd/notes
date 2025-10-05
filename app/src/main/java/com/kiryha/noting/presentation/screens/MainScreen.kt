@@ -1,6 +1,8 @@
 package com.kiryha.noting.presentation.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,11 +26,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kiryha.noting.domain.model.NoteListItem
@@ -39,7 +46,10 @@ import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.NoteScreen
 import com.kiryha.noting.presentation.navigation.SettingScreen
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import com.kiryha.noting.utils.SwipeDirection
+import com.kiryha.noting.utils.swipeToAction
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +64,7 @@ fun MainScreen(
     val isSearching by viewModel.isSearching.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
         topBar = {
             NotingTopAppBar(
@@ -62,7 +73,10 @@ fun MainScreen(
                 onSettingsClick = { navController.navigate(SettingScreen) }
             )
         },
-
+        modifier = Modifier.swipeToAction(
+            direction = SwipeDirection.Left,
+            onSwipe = { navController.navigate(NoteScreen())}
+        )
     ) { innerPadding ->
         when (status) {
             is NoteStatus.Failure -> {
@@ -79,17 +93,19 @@ fun MainScreen(
             }
             else -> {}
         }
-        Column(Modifier
-            .fillMaxSize()
-            .padding(top = innerPadding.calculateTopPadding())
-            .padding(horizontal = 15.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = innerPadding.calculateTopPadding())
+                .padding(horizontal = 15.dp)
+        ) {
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),
                 verticalItemSpacing = 4.dp,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.weight(1f),
                 content = {
-                    item(span = StaggeredGridItemSpan.FullLine) { NoteSearchBar(searchText, viewModel)}
+                    item(span = StaggeredGridItemSpan.FullLine) { NoteSearchBar(searchText, viewModel) }
                     groupedNotes.item.forEach { listItem ->
                         when (listItem) {
                             is NoteListItem.MonthHeader -> {
@@ -103,7 +119,7 @@ fun MainScreen(
                                         color = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(top = 25.dp ,bottom = 5.dp, start = 4.dp)
+                                            .padding(top = 25.dp, bottom = 5.dp, start = 4.dp)
                                     )
                                 }
                             }
@@ -124,18 +140,16 @@ fun MainScreen(
                             }
                         }
                     }
-                    item(span = StaggeredGridItemSpan.FullLine) {  Spacer(Modifier.height(100.dp)) }
+                    item(span = StaggeredGridItemSpan.FullLine) { Spacer(Modifier.height(100.dp)) }
                 }
             )
         }
-
 
         HorizontalButton(
             onClick = { navController.navigate(NoteScreen()) },
             innerPadding = innerPadding,
             text = "New Note"
         )
-
     }
 }
 
