@@ -41,8 +41,6 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         _notes.value
     )
 
-
-
     private val _isSearching = MutableStateFlow(false)
     val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
 
@@ -86,7 +84,6 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         viewModelScope.launch {
             val result = repository.upsertNote(note)
             if (result.status == NoteStatus.Success) {
-                // Обновляем список заметок
                 loadNotes()
             }
             _status.value = result.status
@@ -97,7 +94,6 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         viewModelScope.launch {
             val result = repository.deleteNote(id)
             if (result.status == NoteStatus.Deleted) {
-                // Обновляем список заметок
                 loadNotes()
             }
             _status.value = result.status

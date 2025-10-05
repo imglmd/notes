@@ -53,6 +53,12 @@ fun getTypography(): Typography{
             lineHeight = 38.sp,
             letterSpacing = 0.sp
         ),
+        bodyMedium = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Normal,
+            fontSize = 10.sp,
+            lineHeight = 10.sp,
+        )
     )
 }
 

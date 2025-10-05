@@ -1,14 +1,13 @@
 package com.kiryha.noting.presentation.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -16,7 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -24,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -36,6 +37,7 @@ import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.NoteScreen
 import com.kiryha.noting.presentation.navigation.SettingScreen
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +51,8 @@ fun MainScreen(
     val selectedNote by viewModel.selectedNote.collectAsState()
     val searchText by viewModel.searchText.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
-
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         topBar = {
             NotingTopAppBar(
@@ -74,17 +77,19 @@ fun MainScreen(
                 }
             }
             else -> {
-                // No action needed for Success
+
             }
         }
-        Column(Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 15.dp)) {
+        Column(Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(horizontal = 15.dp)) {
             TextField(
                 value = searchText,
                 onValueChange = viewModel::onSearchTextChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(0.dp)
-                    .wrapContentHeight()
                     .clip(RoundedCornerShape(100)),
                 placeholder = { Text("Search")},
                 colors = TextFieldDefaults.colors(
@@ -104,10 +109,17 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.weight(1f),
                 content = {
-                    items(notes.item){ note ->
+                    items(notes.item) { note ->
                         NoteItem(
                             note = note,
-                            onNoteClick = { navController.navigate(NoteScreen(note.id)) }
+                            onNoteClick = { navController.navigate(NoteScreen(note.id)) },
+                            onEditClick = { navController.navigate(NoteScreen(note.id)) }, // Переход на экран редактирования
+                            onDeleteClick = {
+                                viewModel.deleteNote(note.id) // Удаление заметки
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Заметка удалена")
+                                }
+                            }
                         )
                     }
                     item { Spacer(Modifier.height(100.dp)) }
