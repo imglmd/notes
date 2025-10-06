@@ -16,20 +16,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.components.ProfileSection
 import com.kiryha.noting.presentation.components.RadioButtonGroup
 import com.kiryha.noting.presentation.navigation.MainScreen
+import com.kiryha.noting.theme.ThemeMode
+import com.kiryha.noting.utils.PreferencesManager
 import com.kiryha.noting.utils.SwipeDirection
 import com.kiryha.noting.utils.swipeToAction
 
 @Composable
 fun SettingScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    onThemeChanged: (ThemeMode) -> Unit
 ) {
+    val context = LocalContext.current
+    val currentTheme = PreferencesManager.getThemeMode(context)
     var saveLocation by remember { mutableStateOf("local") }
 
     Scaffold(
@@ -71,9 +77,25 @@ fun SettingScreen(
                         "local" -> "Local Device" to null
                         else -> option to null
                     }
-                },
-
+                    },
                 )
+            RadioButtonGroup(
+                label = "theme",
+                options = listOf(ThemeMode.Light, ThemeMode.System, ThemeMode.Dark),
+                selectedOption = currentTheme,
+                onOptionSelected = { newTheme ->
+                    println("Theme selected: $newTheme") // Для отладки
+                    PreferencesManager.saveThemeMode(context, newTheme)
+                    onThemeChanged(newTheme)
+                },
+                optionToTextStyle = { theme ->
+                    when (theme) {
+                        ThemeMode.Light -> "Светлая" to null
+                        ThemeMode.System -> "Системная" to null
+                        ThemeMode.Dark -> "Темная" to null
+                    }
+                }
+            )
 
         }
     }

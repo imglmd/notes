@@ -59,7 +59,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun NotingTheme(
     themeMode: ThemeMode = ThemeMode.System,
-    darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {

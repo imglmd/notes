@@ -13,6 +13,8 @@ import com.kiryha.noting.presentation.screens.MainScreen
 import com.kiryha.noting.presentation.screens.NoteScreen
 import com.kiryha.noting.presentation.screens.SettingScreen
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import com.kiryha.noting.theme.ThemeMode
+import com.kiryha.noting.utils.PreferencesManager
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -29,11 +31,12 @@ object SettingScreen
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,
-    viewModel: NoteViewModel
+    viewModel: NoteViewModel,
+    currentTheme: ThemeMode
 ) {
     NavHost(
         navController = navController,
-        startDestination = MainScreen
+        startDestination = MainScreen,
     ) {
         composable<MainScreen>(
             enterTransition = {
@@ -120,7 +123,13 @@ fun SetupNavGraph(
                 ) + fadeOut(animationSpec = tween(300))
             }
         ) {
-            SettingScreen(navController = navController)
+            SettingScreen(
+                navController = navController,
+                onThemeChanged = { newTheme ->
+                    currentTheme = newTheme
+                    PreferencesManager.saveThemeMode(this@NavHost, newTheme)
+                }
+            )
         }
     }
 }

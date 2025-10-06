@@ -8,6 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -18,6 +22,7 @@ import com.kiryha.noting.data.repository.NoteRepository
 import com.kiryha.noting.presentation.navigation.SetupNavGraph
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.theme.NotingTheme
+import com.kiryha.noting.utils.PreferencesManager
 
 class MainActivity : ComponentActivity() {
 
@@ -44,11 +49,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            NotingTheme {
+            var currentTheme by remember { mutableStateOf(PreferencesManager.getThemeMode(this)) }
+            NotingTheme(
+                themeMode = currentTheme
+            ) {
                 val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SetupNavGraph(navController = navController, viewModel = viewModel)
+                    SetupNavGraph(navController = navController, viewModel = viewModel, currentTheme = currentTheme)
                 }
             }
         }
