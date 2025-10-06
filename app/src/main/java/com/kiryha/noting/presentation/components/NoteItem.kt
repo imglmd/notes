@@ -65,7 +65,7 @@ fun NoteItem(
     Box(
         modifier = Modifier
             .onSizeChanged { itemHeight = with(density) { it.height.toDp() } }
-            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(14.dp))
             .pointerInput(true) {
                 detectTapGestures(
                     onTap = { onNoteClick() },
@@ -75,9 +75,8 @@ fun NoteItem(
                     }
                 )
             }
-            .padding(top = 8.dp, bottom = 3.dp)
-            .padding(horizontal = 10.dp)
-        ,
+            .padding(top = 9.dp, bottom = 3.dp)
+            .padding(horizontal = 11.dp),
         contentAlignment = Alignment.Center
     ) {
         Column {
@@ -86,7 +85,7 @@ fun NoteItem(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             Row {
                 Text(
                     text = note.date,
