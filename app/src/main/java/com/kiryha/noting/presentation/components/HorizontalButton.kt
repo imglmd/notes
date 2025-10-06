@@ -35,7 +35,10 @@ fun HorizontalButton(
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 30.dp)
                 .heightIn(min = 70.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.background),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            ),
             shape = RoundedCornerShape(20.dp)
         ) {
             Text(text = text, style = MaterialTheme.typography.titleMedium,

@@ -157,7 +157,10 @@ fun NoteScreen(
                             .heightIn(min = 70.dp)
                             .clip(RoundedCornerShape(5.dp)),
                         shape = RoundedCornerShape(0.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
                     ) {
                         Text(text = if (noteId == null) "Save Note" else "Update Note", style = MaterialTheme.typography.titleMedium,
                             textAlign = TextAlign.Center

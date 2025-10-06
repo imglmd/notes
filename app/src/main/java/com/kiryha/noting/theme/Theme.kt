@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.kiryha.noting.theme.Gray
 
 private val DarkColorScheme = darkColorScheme(
     background = Black,
@@ -22,18 +23,27 @@ private val DarkColorScheme = darkColorScheme(
     onTertiary = White,
     onBackground = White,
     onSecondaryContainer = MediumGray,
-    error = Red
+    error = Red,
+
+    surfaceContainerHigh = DarkGray, // для PullToRefresh индикатора
+    onSurfaceVariant = White
 
 )
 
 private val LightColorScheme = lightColorScheme(
-    background = Gray,
-    primary = White,
-    onPrimary = Black,
+    background = White,
+    primary = DarkGray,
+    onPrimary = White,
     secondary = LightGray,
     onSecondary = Black,
     tertiary = Red,
-    onBackground = Black
+    onBackground = DarkGray,
+
+    primaryContainer = Gray,
+    onPrimaryContainer = DarkGray,
+
+    surfaceContainerHigh = Gray,
+    onSurfaceVariant = Black
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
