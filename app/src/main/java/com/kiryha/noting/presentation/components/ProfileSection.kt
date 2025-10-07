@@ -26,7 +26,10 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,13 +42,15 @@ import com.kiryha.noting.R
 fun ProfileSection(
     navController: NavController
 ) {
+    var isAuth by remember { mutableStateOf(true) }
+
     Column {
         Text(
             text = "Profile",
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(Modifier.height(40.dp))
-        if (false){
+        if (isAuth){
 
             Image(
                 painter = painterResource(R.drawable.profile_icon),
@@ -113,7 +118,7 @@ fun ProfileSection(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.clickable(
-                        onClick = {  },
+                        onClick = { isAuth = false },
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ).padding(horizontal = 15.dp, vertical = 10.dp)
@@ -134,9 +139,7 @@ fun ProfileSection(
                         .fillMaxWidth()
                         .height(55.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .clickable {
-                            navController.popBackStack()
-                        }
+                        .clickable { isAuth = true }
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(vertical = 8.dp, horizontal = 15.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -159,7 +162,7 @@ fun ProfileSection(
                         .height(55.dp)
 
                         .clip(RoundedCornerShape(4.dp))
-                        .clickable {  }
+                        .clickable { isAuth = true }
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(vertical = 8.dp, horizontal = 15.dp),
                     verticalAlignment = Alignment.CenterVertically

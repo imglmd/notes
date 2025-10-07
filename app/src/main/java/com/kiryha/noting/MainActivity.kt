@@ -56,7 +56,15 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SetupNavGraph(navController = navController, viewModel = viewModel, currentTheme = currentTheme)
+                    SetupNavGraph(
+                        navController = navController,
+                        viewModel = viewModel,
+                        currentTheme = currentTheme,
+                        onThemeChanged = { newTheme ->
+                            currentTheme = newTheme
+                            PreferencesManager.saveThemeMode(this@MainActivity, newTheme)
+                        }
+                    )
                 }
             }
         }

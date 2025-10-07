@@ -32,7 +32,8 @@ object SettingScreen
 fun SetupNavGraph(
     navController: NavHostController,
     viewModel: NoteViewModel,
-    currentTheme: ThemeMode
+    currentTheme: ThemeMode,
+    onThemeChanged: (ThemeMode) -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -125,10 +126,7 @@ fun SetupNavGraph(
         ) {
             SettingScreen(
                 navController = navController,
-                onThemeChanged = { newTheme ->
-                    currentTheme = newTheme
-                    PreferencesManager.saveThemeMode(this@NavHost, newTheme)
-                }
+                onThemeChanged = onThemeChanged
             )
         }
     }
