@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,7 +65,7 @@ fun NoteScreen(
 
     LaunchedEffect(noteId, selectedNote) {
         if (noteId != null && noteId != -1) {
-            viewModel.getNote(noteId)
+            viewModel.getNoteById(noteId)
             if (selectedNote.item.id == noteId) {
                 noteText = selectedNote.item.text
             }

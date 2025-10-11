@@ -76,9 +76,9 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun getNote(id: Int) {
+    fun getNoteById(id: Int) {
         viewModelScope.launch {
-            val result = repository.getNote(id)
+            val result = repository.getNoteById(id)
             _selectedNote.value = result
             _status.value = result.status
         }

@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import com.kiryha.noting.domain.model.Note
 
 @Dao
 interface NoteDao {
@@ -19,6 +18,6 @@ interface NoteDao {
     suspend fun getNotes(): List<LocalNote>
 
     @Query("SELECT * FROM note WHERE id = :id")
-    suspend fun getNote(id: Int): LocalNote?
+    suspend fun getNoteById(id: Int): LocalNote?
 
 }

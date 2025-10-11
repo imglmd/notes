@@ -21,12 +21,24 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.kiryha.noting.data.source.local.NoteDatabase
 import com.kiryha.noting.data.NoteRepository
+import com.kiryha.noting.data.source.network.NetworkDataSource
 import com.kiryha.noting.presentation.navigation.SetupNavGraph
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.theme.NotingTheme
 import com.kiryha.noting.utils.PreferencesManager
+import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
 
 class MainActivity : ComponentActivity() {
+
+    val supabase = createSupabaseClient(
+        supabaseUrl = "https://wdfurlzsegcgywhyrybn.supabase.co",
+        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZnVybHpzZWdjZ3l3aHlyeWJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODI4MDcsImV4cCI6MjA3NTc1ODgwN30.SYOyoxRJWP1aqO0YB5azYQ7K3NhZJwpKRRELSq2twws"
+    ) {
+        install(Auth)
+        install(Postgrest)
+    }
 
     private val db by lazy {
         Room.databaseBuilder(
@@ -40,7 +52,9 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return NoteViewModel(NoteRepository(db.noteDao)) as T
+                    val networkSource = NetworkDataSource(supabase)
+                    val repository = NoteRepository(db.noteDao, networkSource)
+                    return NoteViewModel(repository) as T
                 }
             }
         }
