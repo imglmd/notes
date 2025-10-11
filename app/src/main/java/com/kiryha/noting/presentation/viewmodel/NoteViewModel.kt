@@ -2,7 +2,7 @@ package com.kiryha.noting.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kiryha.noting.data.repository.NoteRepository
+import com.kiryha.noting.data.NoteRepository
 import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
@@ -97,7 +97,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
     fun deleteNote(id: Int) {
         viewModelScope.launch {
             val result = repository.deleteNote(id)
-            if (result.status == NoteStatus.Deleted) {
+            if (result.status == NoteStatus.Success) {
                 loadNotes()
             }
             _status.value = result.status

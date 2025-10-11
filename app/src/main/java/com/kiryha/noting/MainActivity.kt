@@ -17,8 +17,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import com.kiryha.noting.data.database.NoteDatabase
-import com.kiryha.noting.data.repository.NoteRepository
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.kiryha.noting.data.source.local.NoteDatabase
+import com.kiryha.noting.data.NoteRepository
 import com.kiryha.noting.presentation.navigation.SetupNavGraph
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.theme.NotingTheme
