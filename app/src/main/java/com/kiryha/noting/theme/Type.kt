@@ -1,6 +1,8 @@
 package com.kiryha.noting.theme
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -51,7 +53,7 @@ fun getTypography(): Typography{
             fontWeight = FontWeight.Normal,
             fontSize = 20.sp,
             lineHeight = 26.sp,
-            letterSpacing = 0.5.sp
+            letterSpacing = 0.5.sp,
         ),
         labelMedium = TextStyle(
             fontFamily = FontFamily.Default,

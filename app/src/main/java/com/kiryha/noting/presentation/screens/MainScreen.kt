@@ -6,16 +6,21 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,6 +36,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,15 +49,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NoteItem
 import com.kiryha.noting.presentation.components.NotingTopAppBar
+import com.kiryha.noting.presentation.navigation.MainScreen
 import com.kiryha.noting.presentation.navigation.NoteScreen
 import com.kiryha.noting.presentation.navigation.SettingScreen
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
@@ -82,7 +95,7 @@ fun MainScreen(
         isRefreshing = true
         coroutineScope.launch {
             viewModel.loadNotes()
-            delay(3000)
+            delay(2000)
             isRefreshing = false
         }
     }
@@ -182,8 +195,34 @@ fun MainScreen(
 
 
 @Composable
-fun NoteSearchBar(searchText: String, viewModel: NoteViewModel) {
-    TextField(
+fun NoteSearchBar(searchText: String, viewModel: NoteViewModel,) {
+    CompositionLocalProvider(
+        LocalTextSelectionColors provides TextSelectionColors(
+            handleColor = MaterialTheme.colorScheme.secondary,
+            backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+        )
+    ) {
+        BasicTextField(
+            value = searchText,
+            onValueChange = viewModel::onSearchTextChange,
+            modifier = Modifier.fillMaxWidth(),
+            textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.secondary),
+            singleLine = true,
+            decorationBox = { innerTextField ->
+                Row(
+                    Modifier.background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(20.dp))
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Search, tint = MaterialTheme.colorScheme.secondary, contentDescription = null)
+                    Spacer(Modifier.width(16.dp))
+                    innerTextField()
+                }
+            },
+        )
+    }
+    /*TextField(
         value = searchText,
         onValueChange = viewModel::onSearchTextChange,
         modifier = Modifier
@@ -202,5 +241,5 @@ fun NoteSearchBar(searchText: String, viewModel: NoteViewModel) {
         ),
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.secondary) },
         singleLine = true
-    )
+    )*/
 }

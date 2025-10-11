@@ -24,6 +24,7 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = White,
     onSecondaryContainer = MediumGray,
     error = Red,
+    secondaryContainer = Black,
 
     surfaceContainerHigh = DarkGray, // для PullToRefresh индикатора
     onSurfaceVariant = White
@@ -43,7 +44,9 @@ private val LightColorScheme = lightColorScheme(
     onPrimaryContainer = DarkGray,
 
     surfaceContainerHigh = Gray,
-    onSurfaceVariant = Black
+    onSurfaceVariant = Black,
+
+    secondaryContainer = White
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
