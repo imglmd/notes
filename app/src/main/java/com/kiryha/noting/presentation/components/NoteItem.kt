@@ -78,7 +78,7 @@ fun NoteItem(
     Box(
         modifier = Modifier
             .onSizeChanged { itemHeight = with(density) { it.height.toDp() } }
-            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(16.dp))
             .pointerInput(true) {
                 detectTapGestures(
                     onTap = { onNoteClick() },
@@ -117,7 +117,7 @@ fun NoteItem(
             expanded = isContextMenuVisible,
             onDismissRequest = { isContextMenuVisible = false },
             offset = pressOffset.copy(
-                y = pressOffset.y - itemHeight
+                y = pressOffset.y - itemHeight,
             ),
             shape = RoundedCornerShape(20.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer,

@@ -30,7 +30,7 @@ fun getTypography(): Typography{
         bodySmall = TextStyle(
             fontFamily = FontFamily.Default,
             fontWeight = FontWeight.Normal,
-            fontSize = 13.sp,
+            fontSize = 11.sp,
             lineHeight = 15.sp,
             letterSpacing = 0.5.sp
         ),
