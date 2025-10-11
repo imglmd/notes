@@ -27,6 +27,7 @@ fun HorizontalButton(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
+            .padding(bottom = 7.dp)
     ) {
         Button(
             onClick = onClick,

@@ -150,7 +150,7 @@ fun MainScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(top = innerPadding.calculateTopPadding())
         ) {
             AnimatedVisibility(
                 visible = !isSearchBarVisible and isSearching,
