@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HorizontalButton(
-    modifier: Modifier = Modifier,
     innerPadding: PaddingValues,
     onClick: () -> Unit,
     text: String = "") {
