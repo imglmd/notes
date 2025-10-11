@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -205,14 +206,14 @@ fun NoteSearchBar(searchText: String, viewModel: NoteViewModel,) {
         BasicTextField(
             value = searchText,
             onValueChange = viewModel::onSearchTextChange,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().height(40.dp),
             textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.secondary),
             singleLine = true,
             decorationBox = { innerTextField ->
                 Row(
                     Modifier.background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(20.dp))
-                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                        .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(Icons.Default.Search, tint = MaterialTheme.colorScheme.secondary, contentDescription = null)
