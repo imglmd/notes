@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.presentation.navigation.MainScreen
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun NoteItem(
@@ -61,6 +63,17 @@ fun NoteItem(
     var pressOffset by remember { mutableStateOf(DpOffset.Zero) }
     var itemHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
+
+    val displayDate = remember(note.date) {
+        try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = inputFormat.parse(note.date)
+            val outputFormat = SimpleDateFormat("MM.dd")
+            outputFormat.format(date)
+        } catch (e: Exception) {
+            note.date
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -88,7 +101,7 @@ fun NoteItem(
             Spacer(Modifier.height(10.dp))
             Row {
                 Text(
-                    text = note.date,
+                    text = displayDate,
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.secondary
