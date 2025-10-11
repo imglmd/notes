@@ -1,10 +1,17 @@
 package com.kiryha.noting.presentation.screens
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +25,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
@@ -40,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +56,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -59,6 +70,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
@@ -101,6 +113,12 @@ fun MainScreen(
         }
     }
 
+    val gridState = rememberLazyStaggeredGridState()
+    val isSearchBarVisible by remember {
+        derivedStateOf {
+            gridState.firstVisibleItemIndex == 0
+        }
+    }
     Scaffold(
         topBar = {
             NotingTopAppBar(
@@ -129,60 +147,99 @@ fun MainScreen(
             }
             else -> {}
         }
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
-                .padding(horizontal = 15.dp)
+                .padding(innerPadding)
         ) {
-            PullToRefreshBox(
-                onRefresh = onRefresh,
-                isRefreshing = isRefreshing,
+            AnimatedVisibility(
+                visible = !isSearchBarVisible and isSearching,
+                enter = slideInVertically(
+                    initialOffsetY = { fullHeight -> -fullHeight },
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300)),
+                exit = slideOutVertically(
+                    targetOffsetY = { fullHeight -> -fullHeight },
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300)),
+                modifier = Modifier.zIndex(10f)
             ) {
-                LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Fixed(2),
-                    verticalItemSpacing = 4.dp,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
-                    content = {
-                        item(span = StaggeredGridItemSpan.FullLine) { NoteSearchBar(searchText, viewModel) }
-                        groupedNotes.item.forEach { listItem ->
-                            when (listItem) {
-                                is NoteListItem.MonthHeader -> {
-                                    item(
-                                        key = "header_${listItem.key}",
-                                        span = StaggeredGridItemSpan.FullLine
-                                    ) {
-                                        Text(
-                                            text = listItem.month,
-                                            style = MaterialTheme.typography.titleLarge,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(top = 25.dp, bottom = 5.dp, start = 4.dp)
-                                        )
+                NoteSearchBar(
+                    searchText,
+                    viewModel,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 5.dp)
+                        .shadow(
+                            elevation = 20.dp,
+                            shape = RoundedCornerShape(20.dp),
+                            clip = true
+                        )
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 15.dp)
+            ) {
+                PullToRefreshBox(
+                    onRefresh = onRefresh,
+                    isRefreshing = isRefreshing,
+                ) {
+                    LazyVerticalStaggeredGrid(
+                        state = gridState,
+                        columns = StaggeredGridCells.Fixed(2),
+                        verticalItemSpacing = 4.dp,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+                        content = {
+                            item(
+                                key = "search_bar",
+                                span = StaggeredGridItemSpan.FullLine
+                            ) {
+                                NoteSearchBar(searchText, viewModel)
+                            }
+                            groupedNotes.item.forEach { listItem ->
+                                when (listItem) {
+                                    is NoteListItem.MonthHeader -> {
+                                        item(
+                                            key = "header_${listItem.key}",
+                                            span = StaggeredGridItemSpan.FullLine
+                                        ) {
+                                            Text(
+                                                text = listItem.month,
+                                                style = MaterialTheme.typography.titleLarge,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(top = 25.dp, bottom = 5.dp, start = 4.dp)
+                                            )
+                                        }
                                     }
-                                }
-                                is NoteListItem.NoteItem -> {
-                                    item(key = "note_${listItem.note.id}") {
-                                        NoteItem(
-                                            note = listItem.note,
-                                            onNoteClick = { navController.navigate(NoteScreen(listItem.note.id)) },
-                                            onEditClick = { navController.navigate(NoteScreen(listItem.note.id)) },
-                                            onDeleteClick = {
-                                                viewModel.deleteNote(listItem.note.id)
-                                                scope.launch {
-                                                    snackbarHostState.showSnackbar("Заметка удалена")
+                                    is NoteListItem.NoteItem -> {
+                                        item(key = "note_${listItem.note.id}") {
+                                            NoteItem(
+                                                note = listItem.note,
+                                                onNoteClick = { navController.navigate(NoteScreen(listItem.note.id)) },
+                                                onEditClick = { navController.navigate(NoteScreen(listItem.note.id)) },
+                                                onDeleteClick = {
+                                                    viewModel.deleteNote(listItem.note.id)
+                                                    scope.launch {
+                                                        snackbarHostState.showSnackbar("Заметка удалена")
+                                                    }
                                                 }
-                                            }
-                                        )
+                                            )
+                                        }
                                     }
                                 }
                             }
+                            item(span = StaggeredGridItemSpan.FullLine) { Spacer(Modifier.height(100.dp)) }
                         }
-                        item(span = StaggeredGridItemSpan.FullLine) { Spacer(Modifier.height(100.dp)) }
-                    }
-                )
+                    )
+                }
             }
         }
 
@@ -196,7 +253,11 @@ fun MainScreen(
 
 
 @Composable
-fun NoteSearchBar(searchText: String, viewModel: NoteViewModel,) {
+fun NoteSearchBar(
+    searchText: String,
+    viewModel: NoteViewModel,
+    modifier: Modifier = Modifier
+) {
     CompositionLocalProvider(
         LocalTextSelectionColors provides TextSelectionColors(
             handleColor = MaterialTheme.colorScheme.secondary,
@@ -206,7 +267,7 @@ fun NoteSearchBar(searchText: String, viewModel: NoteViewModel,) {
         BasicTextField(
             value = searchText,
             onValueChange = viewModel::onSearchTextChange,
-            modifier = Modifier.fillMaxWidth().height(40.dp),
+            modifier = modifier.height(40.dp),
             textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.secondary),
             singleLine = true,
