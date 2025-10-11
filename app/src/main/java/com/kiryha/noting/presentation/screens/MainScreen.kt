@@ -223,24 +223,4 @@ fun NoteSearchBar(searchText: String, viewModel: NoteViewModel,) {
             },
         )
     }
-    /*TextField(
-        value = searchText,
-        onValueChange = viewModel::onSearchTextChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(100)),
-        placeholder = { Text("Search")},
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
-            focusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
-            focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
-        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.secondary) },
-        singleLine = true
-    )*/
 }
