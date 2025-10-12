@@ -1,0 +1,44 @@
+package com.kiryha.noting.di
+
+import android.content.Context
+import androidx.room.Room
+import com.kiryha.noting.data.NoteRepository
+import com.kiryha.noting.data.source.local.NoteDao
+import com.kiryha.noting.data.source.local.NoteDatabase
+import com.kiryha.noting.data.source.network.NetworkDataSource
+import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+
+val appModule = module {
+    single {
+        createSupabaseClient(
+            supabaseUrl = "https://wdfurlzsegcgywhyrybn.supabase.co",
+            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZnVybHpzZWdjZ3l3aHlyeWJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODI4MDcsImV4cCI6MjA3NTc1ODgwN30.SYOyoxRJWP1aqO0YB5azYQ7K3NhZJwpKRRELSq2twws"
+        ) {
+            install(Auth)
+            install(Postgrest)
+        }
+    }
+
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            NoteDatabase::class.java,
+            "notes.db"
+        ).build()
+    }
+
+    single<NoteDao> { get<NoteDatabase>().noteDao }
+
+    single { NetworkDataSource(get()) }
+
+    single { NoteRepository(get(), get(), androidContext()) }
+
+    viewModel { NoteViewModel(get()) }
+}
