@@ -38,13 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kiryha.noting.R
 import com.kiryha.noting.presentation.navigation.LoginScreen
+import com.kiryha.noting.presentation.navigation.RegistrationScreen
 import com.kiryha.noting.presentation.screens.LoginScreen
 
 @Composable
 fun ProfileSection(
     navController: NavController
 ) {
-    var isAuth by remember { mutableStateOf(true) }
+    var isAuth by remember { mutableStateOf(false) }
 
     Column {
         Text(
@@ -141,7 +142,7 @@ fun ProfileSection(
                         .fillMaxWidth()
                         .height(55.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .clickable { isAuth = true }
+                        .clickable { navController.navigate(RegistrationScreen) }
                         .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(vertical = 8.dp, horizontal = 15.dp),
                     verticalAlignment = Alignment.CenterVertically

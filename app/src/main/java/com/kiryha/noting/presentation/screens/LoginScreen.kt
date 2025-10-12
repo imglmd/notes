@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,13 +26,12 @@ import com.kiryha.noting.R
 import com.kiryha.noting.presentation.components.AuthTextField
 import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NotingTopAppBar
-import com.kiryha.noting.utils.SwipeDirection
-import com.kiryha.noting.utils.swipeToAction
+import com.kiryha.noting.presentation.navigation.RegistrationScreen
 
 @Composable
 fun LoginScreen(navController: NavController) {
 
-    var userName by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
 
@@ -59,7 +56,7 @@ fun LoginScreen(navController: NavController) {
                 modifier = Modifier.wrapContentWidth().align(Alignment.CenterHorizontally)
             )
             Spacer(Modifier.height(20.dp))
-            AuthTextField("username",userName, {userName = it})
+            AuthTextField("username",username, {username = it})
             Spacer(Modifier.height(20.dp))
             AuthTextField("password", password, {password = it})
             Text(
@@ -69,10 +66,13 @@ fun LoginScreen(navController: NavController) {
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary
             )
+
+
             HorizontalButton(
                 onClick = {},
-                innerPadding = innerPadding,
-                text = "Log in",
+                buttonText = "Log in",
+                text= "Don’t  have an account? Sign up",
+                onTextClick = {navController.navigate(RegistrationScreen)}
             )
         }
     }
