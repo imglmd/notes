@@ -28,6 +28,7 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -49,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -102,6 +104,19 @@ fun MainScreen(
                 showSettingsButton = true,
                 onSettingsClick = { navController.navigate(SettingScreen) }
             )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {navController.navigate(NoteScreen())},
+                containerColor = MaterialTheme.colorScheme.background,
+            ) {
+                Text(
+                    text = "Add Note",
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 10.dp)
+                )
+            }
         },
         modifier = Modifier.swipeToAction(
             direction = SwipeDirection.Left,
@@ -159,7 +174,7 @@ fun MainScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 15.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 PullToRefreshBox(
                     onRefresh = onRefresh,
@@ -219,11 +234,11 @@ fun MainScreen(
             }
         }
 
-        HorizontalButton(
+        /*HorizontalButton(
             onClick = { navController.navigate(NoteScreen()) },
             innerPadding = innerPadding,
             text = "New Note"
-        )
+        )*/
     }
 }
 

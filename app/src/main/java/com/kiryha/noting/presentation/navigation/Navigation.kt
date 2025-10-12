@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.kiryha.noting.presentation.screens.LoginScreen
 import com.kiryha.noting.presentation.screens.MainScreen
 import com.kiryha.noting.presentation.screens.NoteScreen
 import com.kiryha.noting.presentation.screens.SettingScreen
@@ -27,6 +28,9 @@ data class NoteScreen(
 
 @Serializable
 object SettingScreen
+
+@Serializable
+object LoginScreen
 
 @Composable
 fun SetupNavGraph(
@@ -130,5 +134,34 @@ fun SetupNavGraph(
                 viewModel = viewModel
             )
         }
+        composable<LoginScreen>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            LoginScreen(navController = navController)
+        }
+
     }
 }

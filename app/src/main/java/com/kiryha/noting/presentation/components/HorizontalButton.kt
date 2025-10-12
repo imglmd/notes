@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -25,24 +26,25 @@ fun HorizontalButton(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding)
-            .padding(bottom = 7.dp)
+            .padding(bottom = 12.dp)
+            .imePadding()
     ) {
         Button(
             onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 30.dp)
-                .heightIn(min = 70.dp),
+                .align(Alignment.BottomCenter),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onBackground
             ),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Text(text = text, style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 10.dp)
             )
         }
     }

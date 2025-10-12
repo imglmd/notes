@@ -92,7 +92,6 @@ fun SettingScreen(
                 options = listOf(ThemeMode.Light, ThemeMode.System, ThemeMode.Dark),
                 selectedOption = currentTheme,
                 onOptionSelected = { newTheme ->
-                    println("Theme selected: $newTheme") // Для отладки
                     PreferencesManager.saveThemeMode(context, newTheme)
                     onThemeChanged(newTheme)
                 },
