@@ -126,7 +126,8 @@ fun SetupNavGraph(
         ) {
             SettingScreen(
                 navController = navController,
-                onThemeChanged = onThemeChanged
+                onThemeChanged = onThemeChanged,
+                viewModel = viewModel
             )
         }
     }
