@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     val networkSource = NetworkDataSource(supabase)
-                    val repository = NoteRepository(db.noteDao, networkSource)
+                    val repository = NoteRepository(db.noteDao, networkSource, applicationContext)
                     return NoteViewModel(repository) as T
                 }
             }

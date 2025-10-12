@@ -170,7 +170,7 @@ fun MainScreen(
                         columns = StaggeredGridCells.Fixed(2),
                         verticalItemSpacing = 4.dp,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
                         content = {
                             item(
                                 key = "search_bar",
