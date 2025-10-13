@@ -21,6 +21,7 @@ class AuthViewModel(private val authRepository: AuthRepository): ViewModel() {
     fun signInByEmail(email: String, password: String){
         viewModelScope.launch {
             _authStatus.value = AuthStatus.Loading
+            authRepository.signInWithEmailAndPassword(email, password)
 
 
         }
@@ -28,7 +29,6 @@ class AuthViewModel(private val authRepository: AuthRepository): ViewModel() {
     fun signOut(){
         viewModelScope.launch {
             _authStatus.value = AuthStatus.Loading
-
 
         }
     }
