@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -28,6 +29,7 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -49,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -102,6 +105,20 @@ fun MainScreen(
                 showSettingsButton = true,
                 onSettingsClick = { navController.navigate(SettingScreen) }
             )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {navController.navigate(NoteScreen())},
+                containerColor = MaterialTheme.colorScheme.background,
+                modifier = Modifier.imePadding()
+            ) {
+                Text(
+                    text = "Add Note",
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 10.dp)
+                )
+            }
         },
         modifier = Modifier.swipeToAction(
             direction = SwipeDirection.Left,
@@ -159,7 +176,7 @@ fun MainScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 15.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 PullToRefreshBox(
                     onRefresh = onRefresh,
@@ -170,7 +187,7 @@ fun MainScreen(
                         columns = StaggeredGridCells.Fixed(2),
                         verticalItemSpacing = 4.dp,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
                         content = {
                             item(
                                 key = "search_bar",
@@ -219,11 +236,11 @@ fun MainScreen(
             }
         }
 
-        HorizontalButton(
+        /*HorizontalButton(
             onClick = { navController.navigate(NoteScreen()) },
             innerPadding = innerPadding,
             text = "New Note"
-        )
+        )*/
     }
 }
 

@@ -9,8 +9,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.kiryha.noting.presentation.screens.LoginScreen
 import com.kiryha.noting.presentation.screens.MainScreen
 import com.kiryha.noting.presentation.screens.NoteScreen
+import com.kiryha.noting.presentation.screens.RegistrationScreen
 import com.kiryha.noting.presentation.screens.SettingScreen
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.theme.ThemeMode
@@ -27,6 +29,12 @@ data class NoteScreen(
 
 @Serializable
 object SettingScreen
+
+@Serializable
+object LoginScreen
+
+@Serializable
+object RegistrationScreen
 
 @Composable
 fun SetupNavGraph(
@@ -126,8 +134,66 @@ fun SetupNavGraph(
         ) {
             SettingScreen(
                 navController = navController,
-                onThemeChanged = onThemeChanged
+                onThemeChanged = onThemeChanged,
+                viewModel = viewModel
             )
         }
+        composable<LoginScreen>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            LoginScreen(navController = navController)
+        }
+        composable<RegistrationScreen>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
+        ) {
+            RegistrationScreen(navController = navController)
+        }
+
     }
 }

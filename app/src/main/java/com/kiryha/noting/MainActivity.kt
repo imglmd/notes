@@ -13,43 +13,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
-import androidx.room.Room
-import com.kiryha.noting.data.database.NoteDatabase
-import com.kiryha.noting.data.repository.NoteRepository
 import com.kiryha.noting.presentation.navigation.SetupNavGraph
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.theme.NotingTheme
 import com.kiryha.noting.utils.PreferencesManager
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val db by lazy {
-        Room.databaseBuilder(
-            applicationContext,
-            NoteDatabase::class.java,
-            "notes.db"
-        ).build()
-    }
-
-    private val viewModel by viewModels<NoteViewModel>(
-        factoryProducer = {
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return NoteViewModel(NoteRepository(db.noteDao)) as T
-                }
-            }
-        }
-    )
+    private val viewModel: NoteViewModel by viewModel()
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var currentTheme by remember { mutableStateOf(PreferencesManager.getThemeMode(this)) }
+            var currentTheme by remember { mutableStateOf(PreferencesManager.getThemeMode(this@MainActivity)) }
             NotingTheme(
                 themeMode = currentTheme
             ) {

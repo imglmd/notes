@@ -1,24 +1,18 @@
 package com.kiryha.noting.domain.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Entity
 data class Note(
-    @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val text: String,
-    val date: String
+    val date: String,
+    val userId: Int? = null
 ) {
     fun doesMatchSearchQuery(query: String): Boolean {
         if (query.isBlank()) return true
-        //поиск по тексту
         if (text.contains(query, ignoreCase = true)) return true
-        //поиск по дате
         if (date.contains(query, ignoreCase = true)) return true
-        //поиск по месяцу
         try {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val monthDisplayFormat = SimpleDateFormat("LLLL", Locale("en"))
