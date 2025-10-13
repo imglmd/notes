@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class NetworkNote(
     val id: Int,
     val text: String,
-    val date: String
+    val date: String,
+    val user_id: Int
 )

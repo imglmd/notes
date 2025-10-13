@@ -81,7 +81,7 @@ class NoteRepository(
     }
     private suspend fun syncFromNetwork() {
         try {
-            val networkNotes = networkSource.getNotes()
+            val networkNotes = networkSource.getNotesByUserId()
             networkNotes.forEach { noteDao.upsertNote(it.toLocal()) }
         } catch (e: Exception) {
 

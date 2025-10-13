@@ -6,7 +6,8 @@ import java.util.*
 data class Note(
     val id: Int = 0,
     val text: String,
-    val date: String
+    val date: String,
+    val userId: Int? = null
 ) {
     fun doesMatchSearchQuery(query: String): Boolean {
         if (query.isBlank()) return true

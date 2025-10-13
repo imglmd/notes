@@ -7,7 +7,7 @@ import com.kiryha.noting.domain.model.Note
 fun Note.toLocal() = LocalNote(
     id = id,
     text = text,
-    date = date
+    date = date,
 )
 fun List<Note>.toLocal() = map(Note::toLocal)
 
@@ -34,7 +34,7 @@ fun List<NetworkNote>.toLocal() = map(NetworkNote::toLocal)
 fun LocalNote.toNetwork() = NetworkNote(
     id = id,
     text = text,
-    date = date
+    date = date,
 )
 
 fun List<LocalNote>.toNetwork() = map(LocalNote::toNetwork)
