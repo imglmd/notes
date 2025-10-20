@@ -14,9 +14,9 @@ import com.kiryha.noting.presentation.screens.MainScreen
 import com.kiryha.noting.presentation.screens.NoteScreen
 import com.kiryha.noting.presentation.screens.RegistrationScreen
 import com.kiryha.noting.presentation.screens.SettingScreen
+import com.kiryha.noting.presentation.viewmodel.AuthViewModel
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.theme.ThemeMode
-import com.kiryha.noting.utils.PreferencesManager
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -39,7 +39,8 @@ object RegistrationScreen
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,
-    viewModel: NoteViewModel,
+    noteViewModel: NoteViewModel,
+    authViewModel: AuthViewModel,
     currentTheme: ThemeMode,
     onThemeChanged: (ThemeMode) -> Unit
 ) {
@@ -73,7 +74,7 @@ fun SetupNavGraph(
                 ) + fadeOut(animationSpec = tween(300))
             }
         ) {
-            MainScreen(navController = navController, viewModel = viewModel)
+            MainScreen(navController = navController, viewModel = noteViewModel)
         }
 
         composable<NoteScreen>(
@@ -103,7 +104,7 @@ fun SetupNavGraph(
             }
         ) {
             val args = it.toRoute<NoteScreen>()
-            NoteScreen(navController = navController, noteId = args.noteId, viewModel = viewModel)
+            NoteScreen(navController = navController, noteId = args.noteId, viewModel = noteViewModel)
         }
 
         composable<SettingScreen>(
@@ -135,7 +136,7 @@ fun SetupNavGraph(
             SettingScreen(
                 navController = navController,
                 onThemeChanged = onThemeChanged,
-                viewModel = viewModel
+                viewModel = noteViewModel
             )
         }
         composable<LoginScreen>(
@@ -192,7 +193,7 @@ fun SetupNavGraph(
                 ) + fadeOut(animationSpec = tween(300))
             }
         ) {
-            RegistrationScreen(navController = navController)
+            RegistrationScreen(navController = navController, viewModel = authViewModel)
         }
 
     }

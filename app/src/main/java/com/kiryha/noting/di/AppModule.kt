@@ -2,10 +2,12 @@ package com.kiryha.noting.di
 
 import android.content.Context
 import androidx.room.Room
+import com.kiryha.noting.data.AuthRepository
 import com.kiryha.noting.data.NoteRepository
 import com.kiryha.noting.data.source.local.NoteDao
 import com.kiryha.noting.data.source.local.NoteDatabase
 import com.kiryha.noting.data.source.network.NetworkDataSource
+import com.kiryha.noting.presentation.viewmodel.AuthViewModel
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
@@ -39,6 +41,8 @@ val appModule = module {
     single { NetworkDataSource(get()) }
 
     single { NoteRepository(get(), get(), androidContext()) }
+    single { AuthRepository(get())}
 
     viewModel { NoteViewModel(get()) }
+    viewModel { AuthViewModel(get()) }
 }

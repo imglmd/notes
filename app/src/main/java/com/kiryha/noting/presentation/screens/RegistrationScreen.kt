@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,14 +28,19 @@ import com.kiryha.noting.presentation.components.AuthTextField
 import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.LoginScreen
+import com.kiryha.noting.presentation.viewmodel.AuthViewModel
+import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import io.ktor.util.collections.getValue
+import io.ktor.util.collections.setValue
 
 @Composable
 fun RegistrationScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: AuthViewModel
 ) {
-    var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val username by viewModel.username.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
     var repeatPassword by remember { mutableStateOf("") }
 
 
@@ -50,25 +56,34 @@ fun RegistrationScreen(
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp).fillMaxSize()
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+                .fillMaxSize()
         ){
             Spacer(Modifier.height(40.dp))
             Image(
                 painter = painterResource(R.drawable.profile_icon),
                 contentDescription = null,
-                modifier = Modifier.wrapContentWidth().align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .align(Alignment.CenterHorizontally)
             )
             Spacer(Modifier.height(10.dp))
-            AuthTextField("username",username, {username = it})
+            AuthTextField("username",username, viewModel::onUsernameChange)
             Spacer(Modifier.height(10.dp))
-            AuthTextField("email", email, {email = it})
+            AuthTextField("email", email, viewModel::onEmailChange)
             Spacer(Modifier.height(10.dp))
-            AuthTextField("password", password, {password = it})
+            AuthTextField("password", password, viewModel::onPasswordChange)
             Spacer(Modifier.height(10.dp))
             AuthTextField("repeat password", repeatPassword, {repeatPassword = it})
 
             HorizontalButton(
-                onClick = {},
+                onClick = {
+                    if(password.isNotBlank() && password==repeatPassword) {
+                        TODO()
+                    }
+                },
                 buttonText = "Sign up",
                 text= "Already have an account? Log in",
                 onTextClick = {navController.navigate(LoginScreen)}

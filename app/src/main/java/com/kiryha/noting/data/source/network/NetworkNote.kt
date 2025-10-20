@@ -7,5 +7,5 @@ data class NetworkNote(
     val id: Int,
     val text: String,
     val date: String,
-    val user_id: Int
+    val user_id: Int = 0
 )
