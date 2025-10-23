@@ -36,7 +36,7 @@ fun AuthTextField(
         label,
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.padding(start = 15.dp).fillMaxWidth(),
-     )
+        )
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
