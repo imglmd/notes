@@ -1,6 +1,7 @@
 package com.kiryha.noting.presentation.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,10 +9,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,14 +32,38 @@ import com.kiryha.noting.R
 import com.kiryha.noting.presentation.components.AuthTextField
 import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NotingTopAppBar
+import com.kiryha.noting.presentation.navigation.MainScreen
 import com.kiryha.noting.presentation.navigation.RegistrationScreen
+import com.kiryha.noting.presentation.viewmodel.AuthViewModel
+import com.kiryha.noting.presentation.viewmodel.states.AuthState
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    viewModel: AuthViewModel
+) {
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val formState by viewModel.formState.collectAsState()
+    val authState by viewModel.authState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
+                // Переход на главный экран после успешного входа
+                navController.navigate(MainScreen) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+            is AuthState.Error -> {
+                snackbarHostState.showSnackbar(
+                    message = (authState as AuthState.Error).message
+                )
+                viewModel.clearError()
+            }
+            else -> {}
+        }
+    }
 
 
     Scaffold(
@@ -45,35 +75,52 @@ fun LoginScreen(navController: NavController) {
             )
         },
     ) { innerPadding ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp).fillMaxSize()
+        Box(
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
         ){
-            Spacer(Modifier.height(40.dp))
-            Image(
-                painter = painterResource(R.drawable.profile_icon),
-                contentDescription = null,
-                modifier = Modifier.wrapContentWidth().align(Alignment.CenterHorizontally)
-            )
-            Spacer(Modifier.height(20.dp))
-            AuthTextField("username",username, {username = it})
-            Spacer(Modifier.height(20.dp))
-            AuthTextField("password", password, {password = it})
-            Text(
-                "forget password?",
-                modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp).padding(end = 5.dp),
-                textAlign = TextAlign.Right,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+            ){
+                Spacer(Modifier.height(40.dp))
+                Image(
+                    painter = painterResource(R.drawable.profile_icon),
+                    contentDescription = null,
+                    modifier = Modifier.wrapContentWidth().align(Alignment.CenterHorizontally)
+                )
+                Spacer(Modifier.height(20.dp))
+                AuthTextField(
+                    "email",
+                    formState.email,
+                    viewModel::onEmailChange
+                )
+                Spacer(Modifier.height(20.dp))
+                AuthTextField(
+                    "password",
+                    formState.password,
+                    viewModel::onPasswordChange
+                )
+                Text(
+                    "forget password?",
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp).padding(end = 5.dp),
+                    textAlign = TextAlign.Right,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
 
 
-            HorizontalButton(
-                onClick = {},
-                buttonText = "Log in",
-                text= "Don’t  have an account? Sign up",
-                onTextClick = {navController.navigate(RegistrationScreen)}
-            )
+                HorizontalButton(
+                    onClick = { viewModel.signIn() },
+                    buttonText = "Log in",
+                    text= "Don’t  have an account? Sign up",
+                    onTextClick = {navController.navigate(RegistrationScreen)}
+                )
+            }
+
         }
+
     }
 }

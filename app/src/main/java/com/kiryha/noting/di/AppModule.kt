@@ -36,7 +36,7 @@ val appModule = module {
         Room.databaseBuilder(
             androidContext(),
             NoteDatabase::class.java,
-            "notes.db"
+            "noting.db"
         ).build()
     }
 

@@ -71,12 +71,6 @@ fun RegistrationScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.resetForm()
-        repeatPassword = ""
-        repeatPasswordError = null
-    }
-
     Scaffold(
         topBar = {
             NotingTopAppBar(

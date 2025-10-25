@@ -136,7 +136,8 @@ fun SetupNavGraph(
             SettingScreen(
                 navController = navController,
                 onThemeChanged = onThemeChanged,
-                viewModel = noteViewModel
+                noteViewModel = noteViewModel,
+                authViewModel = authViewModel
             )
         }
         composable<LoginScreen>(
@@ -165,7 +166,7 @@ fun SetupNavGraph(
                 ) + fadeOut(animationSpec = tween(300))
             }
         ) {
-            LoginScreen(navController = navController)
+            LoginScreen(navController = navController, viewModel = authViewModel)
         }
         composable<RegistrationScreen>(
             enterTransition = {
