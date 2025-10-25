@@ -2,15 +2,22 @@ package com.kiryha.noting.data
 
 import com.kiryha.noting.data.source.local.LocalNote
 import com.kiryha.noting.data.source.network.NetworkNote
+import com.kiryha.noting.data.source.network.NetworkUser
 import com.kiryha.noting.domain.model.Note
+import com.kiryha.noting.domain.model.User
 
-fun Note.toLocal() = LocalNote(
+// ============ note ============
+
+fun Note.toLocal(userId: String?) = LocalNote(
     id = id,
     text = text,
     date = date,
+    userId = userId,
+    isSynced = false,
+    isDeleted = false
 )
-fun List<Note>.toLocal() = map(Note::toLocal)
 
+fun List<Note>.toLocal(userId: String?) = map { it.toLocal(userId) }
 
 fun LocalNote.toExternal() = Note(
     id = id,
@@ -22,31 +29,49 @@ fun LocalNote.toExternal() = Note(
 fun List<LocalNote>.toExternal() = map(LocalNote::toExternal)
 
 fun NetworkNote.toLocal() = LocalNote(
-    id = id,
+    id = app_id,
     text = text,
-    date = date
+    date = date,
+    userId = user_id,
+    isSynced = true,
+    isDeleted = false
 )
 
 @JvmName("networkToLocal")
 fun List<NetworkNote>.toLocal() = map(NetworkNote::toLocal)
 
-// Local to Network
 fun LocalNote.toNetwork() = NetworkNote(
-    id = id,
+    app_id = id,
+    user_id = userId ?: "",
     text = text,
-    date = date,
+    date = date
 )
 
 fun List<LocalNote>.toNetwork() = map(LocalNote::toNetwork)
 
-// External to Network
-fun Note.toNetwork() = toLocal().toNetwork()
+fun Note.toNetwork(userId: String) = NetworkNote(
+    app_id = id,
+    user_id = userId,
+    text = text,
+    date = date
+)
 
 @JvmName("externalToNetwork")
-fun List<Note>.toNetwork() = map(Note::toNetwork)
+fun List<Note>.toNetwork(userId: String) = map { it.toNetwork(userId) }
 
-// Network to External
-fun NetworkNote.toExternal() = toLocal().toExternal()
+fun NetworkNote.toExternal() = Note(
+    id = app_id,
+    text = text,
+    date = date
+)
 
 @JvmName("networkToExternal")
 fun List<NetworkNote>.toExternal() = map(NetworkNote::toExternal)
+
+// ============ user ============
+
+fun NetworkUser.toExternal() = User(
+    id = id,
+    email = email,
+    username = username
+)

@@ -1,5 +1,6 @@
 package com.kiryha.noting.presentation.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import com.kiryha.noting.theme.Red
 import com.kiryha.noting.utils.SwipeDirection
 import com.kiryha.noting.utils.swipeToAction
 import java.time.LocalDateTime
@@ -127,7 +129,7 @@ fun NoteScreen(
                 Text(
                     text = "Error loading note",
                     color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp).padding(innerPadding)
                 )
             }
             else -> {

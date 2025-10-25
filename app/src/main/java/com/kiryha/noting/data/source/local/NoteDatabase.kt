@@ -6,9 +6,10 @@ import com.kiryha.noting.data.source.local.NoteDao
 import com.kiryha.noting.domain.model.Note
 
 @Database(
-    entities = [LocalNote::class],
+    entities = [LocalNote::class, DeletedNote::class],
     version = 1,
 )
 abstract class NoteDatabase: RoomDatabase() {
     abstract val noteDao: NoteDao
+    abstract val deletedNoteDao: DeletedNoteDao
 }

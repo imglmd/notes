@@ -8,6 +8,7 @@ import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.domain.status.ResultWithStatus
 import com.kiryha.noting.presentation.TestData.testNotes
+import com.kiryha.noting.presentation.viewmodel.states.SyncState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,9 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
+
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
 
     private val _notes = MutableStateFlow<ResultWithStatus<List<Note>>>(
         ResultWithStatus(
@@ -46,9 +50,6 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         ResultWithStatus(emptyList(), NoteStatus.Success)
     )
 
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
-
     private val _status = MutableStateFlow<NoteStatus>(NoteStatus.Success)
     val status: StateFlow<NoteStatus> get() = _status.asStateFlow()
 
@@ -59,6 +60,9 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         )
     )
     val selectedNote: StateFlow<ResultWithStatus<Note>> get() = _selectedNote.asStateFlow()
+
+    private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)
+    val syncState: StateFlow<SyncState> = _syncState.asStateFlow()
 
     init {
         loadNotes()
@@ -104,6 +108,51 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
             _status.value = result.status
         }
     }
+
+
+    fun syncNotes() {
+        viewModelScope.launch {
+            _syncState.value = SyncState.Syncing
+
+            val result = repository.fullSync()
+
+            result.fold(
+                onSuccess = {
+                    loadNotes()
+                    _syncState.value = SyncState.Success
+
+                    // Автоматически сбрасываем состояние через 2 секунды
+                    kotlinx.coroutines.delay(2000)
+                    if (_syncState.value is SyncState.Success) {
+                        _syncState.value = SyncState.Idle
+                    }
+                },
+                onFailure = { error ->
+                    _syncState.value = SyncState.Error(
+                        error.message ?: "Ошибка синхронизации"
+                    )
+
+                    // Автоматически сбрасываем ошибку через 3 секунды
+                    kotlinx.coroutines.delay(3000)
+                    if (_syncState.value is SyncState.Error) {
+                        _syncState.value = SyncState.Idle
+                    }
+                }
+            )
+        }
+    }
+
+    fun clearNotes() {
+        viewModelScope.launch {
+            repository.clearLocalData()
+            _notes.value = ResultWithStatus(emptyList(), NoteStatus.Success)
+            _selectedNote.value = ResultWithStatus(
+                Note(id = -1, text = "", date = ""),
+                NoteStatus.Success
+            )
+        }
+    }
+
 
     private fun groupNotesByMonth(notes: List<Note>): List<NoteListItem> {
         if (notes.isEmpty()) return emptyList()

@@ -4,9 +4,13 @@ import android.content.Context
 import androidx.room.Room
 import com.kiryha.noting.data.AuthRepository
 import com.kiryha.noting.data.NoteRepository
+import com.kiryha.noting.data.source.local.DeletedNoteDao
 import com.kiryha.noting.data.source.local.NoteDao
 import com.kiryha.noting.data.source.local.NoteDatabase
 import com.kiryha.noting.data.source.network.NetworkDataSource
+import com.kiryha.noting.domain.usecase.ValidateEmail
+import com.kiryha.noting.domain.usecase.ValidatePassword
+import com.kiryha.noting.domain.usecase.ValidateUsername
 import com.kiryha.noting.presentation.viewmodel.AuthViewModel
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import io.github.jan.supabase.auth.Auth
@@ -37,12 +41,13 @@ val appModule = module {
     }
 
     single<NoteDao> { get<NoteDatabase>().noteDao }
+    single<DeletedNoteDao> { get<NoteDatabase>().deletedNoteDao }
 
     single { NetworkDataSource(get()) }
 
-    single { NoteRepository(get(), get(), androidContext()) }
+    single { NoteRepository(get(), get(), get(), get(), androidContext()) }
     single { AuthRepository(get())}
 
-    viewModel { NoteViewModel(get()) }
-    viewModel { AuthViewModel(get()) }
+    viewModel { NoteViewModel(get(),) }
+    viewModel { AuthViewModel(get(), get()) }
 }

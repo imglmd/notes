@@ -8,11 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kiryha.noting.data.AuthRepository
 import com.kiryha.noting.data.NoteRepository
+import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.status.AuthStatus
 import com.kiryha.noting.domain.status.ValidationResult
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
 import com.kiryha.noting.domain.usecase.ValidateUsername
+import com.kiryha.noting.presentation.viewmodel.states.AuthFormState
+import com.kiryha.noting.presentation.viewmodel.states.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,71 +23,199 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val authRepository: AuthRepository,
-    private val validateEmail: ValidateEmail,
-    private val validatePassword: ValidatePassword,
-    private val validateUsername: ValidateUsername
+    private val noteRepository: NoteRepository,
 ): ViewModel() {
-    private val _authStatus = MutableStateFlow<AuthStatus>(AuthStatus.Idle)
-    val authStatus: StateFlow<AuthStatus> = _authStatus
+    private val validateEmail = ValidateEmail()
+    private val validatePassword = ValidatePassword()
+    private val validateUsername = ValidateUsername()
 
-    private val _username = MutableStateFlow("")
-    val username: StateFlow<String> = _username.asStateFlow()
+    private val _authState = MutableStateFlow<AuthState>(
+        if (authRepository.isAuthenticated()) AuthState.Authenticated else AuthState.Unauthenticated
+    )
+    val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
-    private val _email = MutableStateFlow("")
-    val email: StateFlow<String> = _email
+    private val _formState = MutableStateFlow(AuthFormState())
+    val formState: StateFlow<AuthFormState> = _formState.asStateFlow()
 
-    private val _password = MutableStateFlow("")
-    val password: StateFlow<String> = _password
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
-    private val _validationResult = MutableStateFlow<ValidationResult>(ValidationResult(true))
-    val validationResult: StateFlow<ValidationResult> = _validationResult
-
-
-    fun signUp(email: String, username: String, password: String){
-        viewModelScope.launch {
-            _authStatus.value = AuthStatus.Loading
-        }
+    init {
+        checkAuthStatus()
     }
-    fun signInByEmail(email: String, password: String){
+
+    private fun checkAuthStatus() {
         viewModelScope.launch {
-            _authStatus.value = AuthStatus.Loading
-            authRepository.signInWithEmailAndPassword(email, password)
-
-
-        }
-    }
-    fun signOut(){
-        viewModelScope.launch {
-            _authStatus.value = AuthStatus.Loading
-
+            if (authRepository.isAuthenticated()) {
+                _currentUser.value = authRepository.getCurrentUser()
+                _authState.value = AuthState.Authenticated
+            } else {
+                _authState.value = AuthState.Unauthenticated
+            }
         }
     }
 
-    private fun submitData() {
-        _authStatus.value = AuthStatus.Loading
+    fun signUp() {
+        val emailResult = validateEmail.execute(_formState.value.email)
+        val passwordResult = validatePassword.execute(_formState.value.password)
+        val usernameResult = validateUsername.execute(_formState.value.username)
 
-        val usernameResult = validateUsername.execute(username.value)
-        val emailResult = validateEmail.execute(email.value)
-        val passwordResult = validatePassword.execute(password.value)
+        val hasError = listOf(
+            emailResult,
+            passwordResult,
+            usernameResult
+        ).any { !it.successful }
+
+        if (hasError) {
+            _formState.value = _formState.value.copy(
+                emailError = emailResult.errorMessage,
+                passwordError = passwordResult.errorMessage,
+                usernameError = usernameResult.errorMessage
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            _formState.value = _formState.value.copy(isLoading = true)
+            _authState.value = AuthState.Loading
+
+            val result = authRepository.signUpWithEmailAndPassword(
+                email = _formState.value.email.trim(),
+                password = _formState.value.password,
+                username = _formState.value.username.trim()
+            )
+
+            result.fold(
+                onSuccess = {
+                    _currentUser.value = authRepository.getCurrentUser()
+                    _authState.value = AuthState.Authenticated
+                    _formState.value = AuthFormState()
+                },
+                onFailure = { error ->
+                    _authState.value = AuthState.Error(
+                        error.message ?: "Ошибка регистрации"
+                    )
+                    _formState.value = _formState.value.copy(isLoading = false)
+                }
+            )
+        }
+    }
+
+    fun signIn() {
+        val emailResult = validateEmail.execute(_formState.value.email)
+        val passwordResult = validatePassword.execute(_formState.value.password)
 
         val hasError = listOf(emailResult, passwordResult).any { !it.successful }
 
         if (hasError) {
-            _authStatus.value = AuthStatus.Error("Input error")
-            _validationResult.value = ValidationResult(false, "KQKDQKDNJWENJOO")
+            _formState.value = _formState.value.copy(
+                emailError = emailResult.errorMessage,
+                passwordError = passwordResult.errorMessage
+            )
             return
         }
 
+        viewModelScope.launch {
+            _formState.value = _formState.value.copy(isLoading = true)
+            _authState.value = AuthState.Loading
+
+            val result = authRepository.signInWithEmailAndPassword(
+                email = _formState.value.email.trim(),
+                password = _formState.value.password
+            )
+
+            result.fold(
+                onSuccess = {
+                    _currentUser.value = authRepository.getCurrentUser()
+                    _authState.value = AuthState.Authenticated
+                    _formState.value = AuthFormState()
+
+                    // Синхронизация заметок после входа
+                    noteRepository.fullSync()
+                },
+                onFailure = { error ->
+                    _authState.value = AuthState.Error(
+                        error.message ?: "Ошибка входа"
+                    )
+                    _formState.value = _formState.value.copy(isLoading = false)
+                }
+            )
+        }
     }
 
-    fun onUsernameChange(newText: String){
-        _username.value = newText
-    }
-    fun onEmailChange(newText: String){
-        _email.value = newText
-    }
-    fun onPasswordChange(newText: String){
-        _password.value = newText
+
+    fun signOut() {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+
+            val result = authRepository.signOut()
+
+            result.fold(
+                onSuccess = {
+                    // Очистка локальных данных после выхода
+                    noteRepository.clearLocalData()
+                    _currentUser.value = null
+                    _authState.value = AuthState.Unauthenticated
+                    _formState.value = AuthFormState()
+                },
+                onFailure = { error ->
+                    _authState.value = AuthState.Error(
+                        error.message ?: "Ошибка выхода"
+                    )
+                }
+            )
+        }
     }
 
+    fun refreshSession() {
+        viewModelScope.launch {
+            val result = authRepository.refreshSession()
+
+            result.fold(
+                onSuccess = {
+                    _currentUser.value = authRepository.getCurrentUser()
+                    _authState.value = AuthState.Authenticated
+                },
+                onFailure = {
+                    _authState.value = AuthState.Unauthenticated
+                }
+            )
+        }
+    }
+
+    fun clearError() {
+        if (_authState.value is AuthState.Error) {
+            _authState.value = if (authRepository.isAuthenticated()) {
+                AuthState.Authenticated
+            } else {
+                AuthState.Unauthenticated
+            }
+        }
+    }
+
+    fun resetForm() {
+        _formState.value = AuthFormState()
+    }
+
+    // ====== On Changes ========
+    fun onEmailChange(email: String) {
+        _formState.value = _formState.value.copy(
+            email = email,
+            emailError = null
+        )
+    }
+
+    fun onPasswordChange(password: String) {
+        _formState.value = _formState.value.copy(
+            password = password,
+            passwordError = null
+        )
+    }
+
+    fun onUsernameChange(username: String) {
+        _formState.value = _formState.value.copy(
+            username = username,
+            usernameError = null
+        )
+    }
 }
