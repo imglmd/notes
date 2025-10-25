@@ -5,17 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kiryha.noting.R
@@ -36,10 +32,7 @@ import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.LoginScreen
 import com.kiryha.noting.presentation.navigation.MainScreen
 import com.kiryha.noting.presentation.viewmodel.AuthViewModel
-import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.presentation.viewmodel.states.AuthState
-import io.ktor.util.collections.getValue
-import io.ktor.util.collections.setValue
 
 @Composable
 fun RegistrationScreen(
@@ -104,27 +97,31 @@ fun RegistrationScreen(
                 )
                 Spacer(Modifier.height(10.dp))
                 AuthTextField(
-                    "username",
-                    formState.username,
-                    viewModel::onUsernameChange
+                    label = "username",
+                    errorMessage =  formState.usernameError,
+                    value = formState.username,
+                    onValueChange =  viewModel::onUsernameChange
                 )
                 Spacer(Modifier.height(10.dp))
                 AuthTextField(
-                    "email",
-                    formState.email,
-                    viewModel::onEmailChange
+                    label = "email",
+                    errorMessage =  formState.emailError,
+                    value = formState.email,
+                    onValueChange =  viewModel::onEmailChange
                 )
                 Spacer(Modifier.height(10.dp))
                 AuthTextField(
-                    "password",
-                    formState.password,
-                    viewModel::onPasswordChange
+                    label = "password",
+                    errorMessage =  formState.passwordError,
+                    value = formState.password,
+                    onValueChange =  viewModel::onPasswordChange
                 )
                 Spacer(Modifier.height(10.dp))
                 AuthTextField(
-                    "repeat password",
-                    repeatPassword,
-                    {   repeatPassword = it
+                    label = "repeat password",
+                    errorMessage = repeatPasswordError,
+                    value = repeatPassword,
+                    onValueChange =  {   repeatPassword = it
                         repeatPasswordError = null}
                 )
 

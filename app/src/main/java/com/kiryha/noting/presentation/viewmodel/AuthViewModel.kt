@@ -47,8 +47,6 @@ class AuthViewModel(
 
             try {
 
-                delay(100)
-
                 val isAuth = authRepository.isAuthenticated()
                 Log.d("AuthViewModel", "isAuthenticated (после ожидания): $isAuth")
 
@@ -131,7 +129,6 @@ class AuthViewModel(
 
             result.fold(
                 onSuccess = {
-                    delay(1000)
                     _currentUser.value = authRepository.getCurrentUser()
                     _authState.value = AuthState.Authenticated
                     _formState.value = AuthFormState()

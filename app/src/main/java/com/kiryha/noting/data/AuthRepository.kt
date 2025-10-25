@@ -2,10 +2,12 @@ package com.kiryha.noting.data
 
 import com.kiryha.noting.data.source.network.NetworkDataSource
 import com.kiryha.noting.domain.model.User
-import com.kiryha.noting.domain.status.NoteStatus
-import com.kiryha.noting.domain.status.ResultWithStatus
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.postgrest.query.Columns
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
@@ -13,6 +15,11 @@ class AuthRepository(
     private val networkSource: NetworkDataSource
 ) {
     private val auth = networkSource.auth
+
+
+    val sessionStatus: Flow<Boolean> = auth.sessionStatus.map { status ->
+        status is SessionStatus.Authenticated
+    }
 
     suspend fun signUpWithEmailAndPassword(
         email: String,
@@ -73,8 +80,10 @@ class AuthRepository(
         return auth.currentUserOrNull()?.id
     }
 
-    fun isAuthenticated(): Boolean {
-        return auth.currentSessionOrNull() != null
+
+    suspend fun isAuthenticated(): Boolean {
+        val status = auth.sessionStatus.first { it !is SessionStatus.Initializing }
+        return status is SessionStatus.Authenticated
     }
 
     suspend fun refreshSession(): Result<Unit> {

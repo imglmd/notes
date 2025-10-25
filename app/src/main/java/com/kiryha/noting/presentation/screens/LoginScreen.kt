@@ -19,9 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -93,15 +91,17 @@ fun LoginScreen(
                 )
                 Spacer(Modifier.height(20.dp))
                 AuthTextField(
-                    "email",
-                    formState.email,
-                    viewModel::onEmailChange
+                    label = "email",
+                    errorMessage =  formState.emailError,
+                    value = formState.email,
+                    onValueChange =  viewModel::onEmailChange
                 )
                 Spacer(Modifier.height(20.dp))
                 AuthTextField(
-                    "password",
-                    formState.password,
-                    viewModel::onPasswordChange
+                    label = "password",
+                    errorMessage =  formState.passwordError,
+                    value = formState.password,
+                    onValueChange =  viewModel::onPasswordChange
                 )
                 Text(
                     "forget password?",
@@ -111,6 +111,7 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.secondary
                 )
 
+                Spacer(Modifier.height(100.dp))
 
                 HorizontalButton(
                     onClick = { viewModel.signIn() },
