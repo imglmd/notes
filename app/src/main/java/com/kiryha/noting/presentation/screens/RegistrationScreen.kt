@@ -33,6 +33,7 @@ import com.kiryha.noting.presentation.navigation.LoginScreen
 import com.kiryha.noting.presentation.navigation.MainScreen
 import com.kiryha.noting.presentation.viewmodel.AuthViewModel
 import com.kiryha.noting.presentation.viewmodel.states.AuthState
+import io.ktor.util.hex
 
 @Composable
 fun RegistrationScreen(
@@ -124,7 +125,7 @@ fun RegistrationScreen(
                     onValueChange =  {   repeatPassword = it
                         repeatPasswordError = null}
                 )
-
+                Spacer(Modifier.height(100.dp))
                 HorizontalButton(
                     onClick = {
                         // Валидация повтора пароля

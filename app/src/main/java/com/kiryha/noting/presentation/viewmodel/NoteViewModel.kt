@@ -77,7 +77,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         viewModelScope.launch {
             val result = repository.getNotes()
             _notes.value = result
-            //_status.value = result.status
+            _status.value = result.status
         }
     }
 
@@ -139,6 +139,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
                     }
                 }
             )
+            loadNotes()
         }
     }
 
@@ -218,6 +219,4 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
             loadNotes()
         }
     }
-
-
 }

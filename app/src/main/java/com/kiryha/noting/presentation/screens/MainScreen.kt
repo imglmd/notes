@@ -86,7 +86,7 @@ fun MainScreen(
     val onRefresh: () -> Unit = {
         isRefreshing = true
         coroutineScope.launch {
-            viewModel.loadNotes()
+            viewModel.syncNotes()
             delay(2000)
             isRefreshing = false
         }

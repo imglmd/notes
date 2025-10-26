@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,30 +67,21 @@ fun NoteItem(
                     }
                 )
             }
-            .padding(top = 9.dp, bottom = 3.dp)
+            .padding(top = 11.dp, bottom = 3.dp)
             .padding(horizontal = 11.dp),
-        contentAlignment = Alignment.Center
     ) {
-        Column {
+        Column(Modifier.fillMaxWidth()) {
             Text(
                 text = note.text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
-            Spacer(Modifier.height(10.dp))
-            Row {
-                Text(
-                    text = displayDate,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    text = note.id.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
+            Text(
+                text = displayDate,
+                modifier = Modifier.align(Alignment.End),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary,
+            )
         }
         DropdownMenu(
             expanded = isContextMenuVisible,
