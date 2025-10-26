@@ -28,11 +28,11 @@ class AuthRepository(
     ): Result<Unit> {
         return try {
             if (networkSource.isEmailExists(email)) {
-                return Result.failure(Exception("Email уже используется"))
+                return Result.failure(Exception("This email address is already in use"))
             }
 
             if (networkSource.isUsernameExists(username)) {
-                return Result.failure(Exception("Имя пользователя уже занято"))
+                return Result.failure(Exception("This username is already taken."))
             }
 
             auth.signUpWith(Email) {
@@ -44,7 +44,7 @@ class AuthRepository(
             }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Registration error, try changing your username and/or email address"))
         }
     }
 
@@ -59,7 +59,7 @@ class AuthRepository(
             }
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(Exception("Неверный email или пароль"))
+            Result.failure(Exception("Incorrect email or password"))
         }
     }
 

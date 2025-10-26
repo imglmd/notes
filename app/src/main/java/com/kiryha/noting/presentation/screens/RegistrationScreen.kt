@@ -42,7 +42,6 @@ fun RegistrationScreen(
 ) {
     val formState by viewModel.formState.collectAsState()
     val authState by viewModel.authState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     var repeatPassword by remember { mutableStateOf("") }
     var repeatPasswordError by remember { mutableStateOf<String?>(null) }
@@ -54,12 +53,6 @@ fun RegistrationScreen(
                 navController.navigate(MainScreen) {
                     popUpTo(0) { inclusive = true }
                 }
-            }
-            is AuthState.Error -> {
-                snackbarHostState.showSnackbar(
-                    message = (authState as AuthState.Error).message
-                )
-                viewModel.clearError()
             }
             else -> {}
         }
@@ -76,7 +69,6 @@ fun RegistrationScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         Box(
             modifier = Modifier.fillMaxSize().padding(innerPadding)

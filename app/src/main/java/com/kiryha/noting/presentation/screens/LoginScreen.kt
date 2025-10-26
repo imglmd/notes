@@ -13,13 +13,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,7 +41,6 @@ fun LoginScreen(
 
     val formState by viewModel.formState.collectAsState()
     val authState by viewModel.authState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -53,23 +50,19 @@ fun LoginScreen(
                     popUpTo(0) { inclusive = true }
                 }
             }
-            is AuthState.Error -> {
-                snackbarHostState.showSnackbar(
-                    message = (authState as AuthState.Error).message
-                )
-                viewModel.clearError()
-            }
             else -> {}
         }
     }
-
 
     Scaffold(
         topBar = {
             NotingTopAppBar(
                 titleText = "Log in",
                 showBackButton = true,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = {
+                    navController.popBackStack()
+                    viewModel.resetForm()
+                }
             )
         },
     ) { innerPadding ->
@@ -92,16 +85,16 @@ fun LoginScreen(
                 Spacer(Modifier.height(20.dp))
                 AuthTextField(
                     label = "email",
-                    errorMessage =  formState.emailError,
+                    errorMessage = formState.emailError,
                     value = formState.email,
-                    onValueChange =  viewModel::onEmailChange
+                    onValueChange = viewModel::onEmailChange
                 )
                 Spacer(Modifier.height(20.dp))
                 AuthTextField(
                     label = "password",
-                    errorMessage =  formState.passwordError,
+                    errorMessage = formState.passwordError,
                     value = formState.password,
-                    onValueChange =  viewModel::onPasswordChange
+                    onValueChange = viewModel::onPasswordChange
                 )
                 Text(
                     "forget password?",
@@ -116,12 +109,10 @@ fun LoginScreen(
                 HorizontalButton(
                     onClick = { viewModel.signIn() },
                     buttonText = "Log in",
-                    text= "Don’t  have an account? Sign up",
-                    onTextClick = {navController.navigate(RegistrationScreen)}
+                    text= "Don't  have an account? Sign up",
+                    onTextClick = { navController.navigate(RegistrationScreen) }
                 )
             }
-
         }
-
     }
 }

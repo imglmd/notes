@@ -5,10 +5,10 @@ import com.kiryha.noting.domain.status.ValidationResult
 class ValidatePassword {
     fun execute(password: String): ValidationResult {
 
-        if (password.length < 8) {
+        if (password.length < 6) {
             return ValidationResult(
                 successful = false,
-                errorMessage = "Password must be at least 8 characters long"
+                errorMessage = "Password must be at least 6 characters long"
             )
         }
 

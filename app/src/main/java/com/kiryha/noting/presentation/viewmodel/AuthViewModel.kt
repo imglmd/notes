@@ -134,10 +134,33 @@ class AuthViewModel(
                     _formState.value = AuthFormState()
                 },
                 onFailure = { error ->
-                    _authState.value = AuthState.Error(
-                        error.message ?: "Ошибка регистрации"
-                    )
-                    _formState.value = _formState.value.copy(isLoading = false)
+                    val errorMessage = error.message ?: "Ошибка регистрации"
+
+                    // Определяем, к какому полю относится ошибка
+                    _formState.value = when {
+                        errorMessage.contains("Email", ignoreCase = true) -> {
+                            _formState.value.copy(
+                                emailError = errorMessage,
+                                isLoading = false
+                            )
+                        }
+                        errorMessage.contains("имя пользователя", ignoreCase = true) ||
+                                errorMessage.contains("username", ignoreCase = true) -> {
+                            _formState.value.copy(
+                                usernameError = errorMessage,
+                                isLoading = false
+                            )
+                        }
+                        else -> {
+                            _formState.value.copy(
+                                usernameError = " ",
+                                emailError = errorMessage,
+                                passwordError = " ",
+                                isLoading = false
+                            )
+                        }
+                    }
+                    _authState.value = AuthState.Unauthenticated
                 }
             )
         }
@@ -176,10 +199,15 @@ class AuthViewModel(
                     noteRepository.fullSync()
                 },
                 onFailure = { error ->
-                    _authState.value = AuthState.Error(
-                        error.message ?: "Ошибка входа"
+                    val errorMessage = error.message ?: "Ошибка входа"
+
+                    // При ошибке входа показывает ошибку на обоих полях
+                    _formState.value = _formState.value.copy(
+                        emailError = errorMessage,
+                        passwordError = " ", // Пустая строка чтобы подсветить поле
+                        isLoading = false
                     )
-                    _formState.value = _formState.value.copy(isLoading = false)
+                    _authState.value = AuthState.Unauthenticated
                 }
             )
         }
