@@ -30,7 +30,6 @@ import com.kiryha.noting.presentation.components.RadioButtonGroup
 import com.kiryha.noting.presentation.viewmodel.AuthViewModel
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.theme.ThemeMode
-import com.kiryha.noting.utils.PreferencesManager
 import com.kiryha.noting.utils.SwipeDirection
 import com.kiryha.noting.utils.swipeToAction
 
@@ -38,12 +37,12 @@ import com.kiryha.noting.utils.swipeToAction
 fun SettingScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    currentTheme: ThemeMode,
     onThemeChanged: (ThemeMode) -> Unit,
     noteViewModel: NoteViewModel,
     authViewModel: AuthViewModel
 ) {
     val context = LocalContext.current
-    val currentTheme = PreferencesManager.getThemeMode(context)
     var saveLocation by remember { mutableStateOf("local") }
 
     Scaffold(
@@ -85,14 +84,13 @@ fun SettingScreen(
                         "local" -> "Local Device" to null
                         else -> option to null
                     }
-                    },
-                )
+                },
+            )
             RadioButtonGroup(
                 label = "theme",
                 options = listOf(ThemeMode.Light, ThemeMode.System, ThemeMode.Dark),
                 selectedOption = currentTheme,
                 onOptionSelected = { newTheme ->
-                    PreferencesManager.saveThemeMode(context, newTheme)
                     onThemeChanged(newTheme)
                 },
                 optionToTextStyle = { theme ->

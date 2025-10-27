@@ -137,7 +137,8 @@ fun SetupNavGraph(
                 navController = navController,
                 onThemeChanged = onThemeChanged,
                 noteViewModel = noteViewModel,
-                authViewModel = authViewModel
+                authViewModel = authViewModel,
+                currentTheme = currentTheme
             )
         }
         composable<LoginScreen>(
