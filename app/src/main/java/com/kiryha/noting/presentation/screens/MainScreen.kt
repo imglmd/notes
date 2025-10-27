@@ -116,10 +116,14 @@ fun SharedTransitionScope.MainScreen(
             ExtendedFloatingActionButton(
                 onClick = {navController.navigate(NoteScreen())},
                 containerColor = MaterialTheme.colorScheme.background,
-                modifier = Modifier.imePadding().sharedBounds(
-                    sharedContentState = rememberSharedContentState(key = EXPLODE_BOUNDS_KEY),
-                    animatedVisibilityScope = animatedVisibilityScope
-                ).fillMaxWidth().padding(horizontal = 30.dp)
+                modifier = Modifier
+                    .imePadding()
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(key = EXPLODE_BOUNDS_KEY),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                    .fillMaxWidth()
+                    .padding(horizontal = 30.dp)
             ) {
                 Text(
                     text = "Add Note",
@@ -197,7 +201,9 @@ fun SharedTransitionScope.MainScreen(
                         columns = StaggeredGridCells.Fixed(2),
                         verticalItemSpacing = 4.dp,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
                         content = {
                             item(
                                 key = "search_bar",
@@ -218,12 +224,23 @@ fun SharedTransitionScope.MainScreen(
                                                 color = MaterialTheme.colorScheme.primary,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .padding(top = 25.dp, bottom = 5.dp, start = 4.dp)
+                                                    .padding(
+                                                        top = 25.dp,
+                                                        bottom = 5.dp,
+                                                        start = 4.dp
+                                                    )
                                             )
                                         }
                                     }
                                     is NoteListItem.NoteItem -> {
-                                        item(key = "note_${listItem.note.id}") {
+                                        item(
+                                            key = "note_${listItem.note.id}",
+                                            span = if (listItem.note.text.length> 100) {
+                                                StaggeredGridItemSpan.FullLine
+                                            } else {
+                                                StaggeredGridItemSpan.SingleLane
+                                            }
+                                        ) {
                                             NoteItem(
                                                 note = listItem.note,
                                                 onNoteClick = { navController.navigate(NoteScreen(listItem.note.id)) },
@@ -276,7 +293,11 @@ fun NoteSearchBar(
             singleLine = true,
             decorationBox = { innerTextField ->
                 Row(
-                    Modifier.background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(20.dp))
+                    Modifier
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            RoundedCornerShape(20.dp)
+                        )
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
