@@ -4,11 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun NoteItem(
+fun CarouselNoteItem(
     note: Note,
     onNoteClick: () -> Unit,
     onEditClick: () -> Unit,
@@ -58,6 +58,7 @@ fun NoteItem(
     Box(
         modifier = Modifier
             .onSizeChanged { itemHeight = with(density) { it.height.toDp() } }
+            .padding(horizontal = 2.dp)
             .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(16.dp))
             .pointerInput(true) {
                 detectTapGestures(
@@ -67,12 +68,11 @@ fun NoteItem(
                         pressOffset = DpOffset(it.x.toDp(), it.y.toDp())
                     }
                 )
-            }
-            .padding(top = 11.dp, bottom = 3.dp)
-            .padding(horizontal = 11.dp),
+            }.height(160.dp).width(140.dp),
     ) {
-        Column(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxSize().padding(6.dp)) {
             Text(
+                modifier = Modifier.weight(1f),
                 text = note.text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -118,6 +118,8 @@ fun NoteItem(
                     isContextMenuVisible = false
                 },
             )
+
         }
     }
+
 }

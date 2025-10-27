@@ -11,5 +11,6 @@ data class LocalNote(
     val date: String,
     val userId: String? = null,  // для связи с пользователем
     val isSynced: Boolean = false,  // флаг синхронизации
-    val isDeleted: Boolean = false  // флаг для отложенного удаления
+    val isDeleted: Boolean = false,  // флаг для отложенного удаления
+    val isPinned: Boolean = false
 )

@@ -7,7 +7,8 @@ data class Note(
     val id: Int = 0,
     val text: String,
     val date: String,
-    val userId: Int? = null
+    val userId: Int? = null,
+    val isPinned: Boolean = false
 ) {
     fun doesMatchSearchQuery(query: String): Boolean {
         if (query.isBlank()) return true

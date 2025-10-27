@@ -9,6 +9,7 @@ data class NetworkNote(
     val user_id: String,
     val text: String,
     val date: String,
+    val is_pinned: Boolean,
     val created_at: String? = null,
     val updated_at: String? = null
 )

@@ -22,7 +22,8 @@ fun List<Note>.toLocal(userId: String?) = map { it.toLocal(userId) }
 fun LocalNote.toExternal() = Note(
     id = id,
     text = text,
-    date = date
+    date = date,
+    isPinned = isPinned
 )
 
 @JvmName("localToExternal")
@@ -44,7 +45,8 @@ fun LocalNote.toNetwork() = NetworkNote(
     app_id = id,
     user_id = userId ?: "",
     text = text,
-    date = date
+    date = date,
+    is_pinned = isPinned
 )
 
 fun List<LocalNote>.toNetwork() = map(LocalNote::toNetwork)
@@ -53,7 +55,8 @@ fun Note.toNetwork(userId: String) = NetworkNote(
     app_id = id,
     user_id = userId,
     text = text,
-    date = date
+    date = date,
+    is_pinned = isPinned
 )
 
 @JvmName("externalToNetwork")
@@ -62,7 +65,8 @@ fun List<Note>.toNetwork(userId: String) = map { it.toNetwork(userId) }
 fun NetworkNote.toExternal() = Note(
     id = app_id,
     text = text,
-    date = date
+    date = date,
+    isPinned = is_pinned
 )
 
 @JvmName("networkToExternal")

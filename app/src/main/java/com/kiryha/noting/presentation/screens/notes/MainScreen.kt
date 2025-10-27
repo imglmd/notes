@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -39,6 +41,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -61,6 +65,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
+import com.kiryha.noting.presentation.components.CarouselNoteItem
 import com.kiryha.noting.presentation.components.NoteItem
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.EXPLODE_BOUNDS_KEY
@@ -80,6 +85,7 @@ fun SharedTransitionScope.MainScreen(
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val groupedNotes by viewModel.groupedNotes.collectAsState()
+    val pinnedNotes by viewModel.pinnedNotes.collectAsState()
     val status by viewModel.status.collectAsState()
     val searchText by viewModel.searchText.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
@@ -210,6 +216,27 @@ fun SharedTransitionScope.MainScreen(
                             ) {
                                 NoteSearchBar(searchText, viewModel)
                             }
+                            item(
+                                key = "pin_carousel",
+                                span = StaggeredGridItemSpan.FullLine
+                            ) {
+                                LazyRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    state = rememberLazyListState(),
+                                ) {
+                                    pinnedNotes.item.forEach { noteItem ->
+                                        item {
+                                            CarouselNoteItem(
+                                                note = noteItem,
+                                                onNoteClick = { navController.navigate(NoteScreen(noteItem.id)) },
+                                                onEditClick = { navController.navigate(NoteScreen(noteItem.id)) },
+                                                onDeleteClick = { viewModel.deleteNote(noteItem.id) },
+                                                onPinClick = { viewModel.togglePinNote(noteItem)}
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                             groupedNotes.item.forEach { listItem ->
                                 when (listItem) {
                                     is NoteListItem.MonthHeader -> {
@@ -244,12 +271,9 @@ fun SharedTransitionScope.MainScreen(
                                                 note = listItem.note,
                                                 onNoteClick = { navController.navigate(NoteScreen(listItem.note.id)) },
                                                 onEditClick = { navController.navigate(NoteScreen(listItem.note.id)) },
-                                                onDeleteClick = {
-                                                    viewModel.deleteNote(listItem.note.id)
-                                                    scope.launch {
-                                                        snackbarHostState.showSnackbar("Заметка удалена")
-                                                    }
-                                                }
+                                                onDeleteClick = { viewModel.deleteNote(listItem.note.id) },
+                                                onPinClick = { viewModel.togglePinNote(listItem.note)}
+
                                             )
                                         }
                                     }

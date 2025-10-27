@@ -34,6 +34,11 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
             NoteStatus.Success
         )
     )
+    private val _pinnedNotes = MutableStateFlow<ResultWithStatus<List<Note>>>(
+        ResultWithStatus(emptyList(), NoteStatus.Success)
+    )
+    val pinnedNotes: StateFlow<ResultWithStatus<List<Note>>> = _pinnedNotes.asStateFlow()
+
     val groupedNotes: StateFlow<ResultWithStatus<List<NoteListItem>>> = searchText.combine(_notes) { text, result ->
         val filteredNotes = if (text.isBlank()){
             result.item
@@ -79,6 +84,9 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
             val result = repository.getNotes()
             _notes.value = result
             _status.value = result.status
+
+            val pinned = result.item.filter { it.isPinned }
+            _pinnedNotes.value = ResultWithStatus(pinned, result.status)
         }
     }
 
@@ -155,6 +163,16 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
+    fun togglePinNote(note: Note) {
+        viewModelScope.launch {
+            val updatedNote = note.copy(isPinned = !note.isPinned)
+            val result = repository.upsertNote(updatedNote)
+            if (result.status == NoteStatus.Success) {
+                loadNotes()
+            }
+            _status.value = result.status
+        }
+    }
 
     private fun groupNotesByMonth(notes: List<Note>): List<NoteListItem> {
         if (notes.isEmpty()) return emptyList()
