@@ -137,10 +137,7 @@ fun SharedTransitionScope.NoteScreen(
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer
             )
         },
-        modifier = Modifier.swipeToAction(
-            direction = SwipeDirection.Right,
-            onSwipe = onExit
-        ).sharedBounds(
+        modifier = Modifier.sharedBounds(
             sharedContentState = rememberSharedContentState(key = EXPLODE_BOUNDS_KEY),
             animatedVisibilityScope = animatedVisibilityScope
         ),

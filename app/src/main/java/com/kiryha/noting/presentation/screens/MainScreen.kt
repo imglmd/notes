@@ -119,20 +119,20 @@ fun SharedTransitionScope.MainScreen(
                 modifier = Modifier.imePadding().sharedBounds(
                     sharedContentState = rememberSharedContentState(key = EXPLODE_BOUNDS_KEY),
                     animatedVisibilityScope = animatedVisibilityScope
-                )
+                ).fillMaxWidth().padding(horizontal = 30.dp)
             ) {
                 Text(
                     text = "Add Note",
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 10.dp)
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 16.dp)
                 )
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
         modifier = Modifier.swipeToAction(
             direction = SwipeDirection.Left,
-            onSwipe = { navController.navigate(NoteScreen())}
+            onSwipe = { navController.navigate(SettingScreen)}
         )
     ) { innerPadding ->
         when (status) {
