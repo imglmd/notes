@@ -5,9 +5,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -116,13 +123,15 @@ fun NoteScreen(
             NotingTopAppBar(
                 titleText = if (noteId == null) "New Note" else "Edit Note",
                 showBackButton = true,
-                onBackClick = onExit
+                onBackClick = onExit,
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer
             )
         },
         modifier = Modifier.swipeToAction(
             direction = SwipeDirection.Right,
             onSwipe = onExit
-        )
+        ),
+        contentWindowInsets = WindowInsets()
     ) { innerPadding ->
         when (status) {
             is NoteStatus.Failure -> {
@@ -136,15 +145,18 @@ fun NoteScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .imePadding()
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .padding(innerPadding)
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)),
                     ) {
                     TextField(
                         value = noteText,
                         onValueChange = { noteText = it },
                         colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                            focusedContainerColor = MaterialTheme.colorScheme.background,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -153,35 +165,29 @@ fun NoteScreen(
 
                         ),
                         modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f)
                             .clip(RoundedCornerShape(5.dp))
+                            .weight(1f)
+                            .fillMaxWidth()
                             .verticalScroll(rememberScrollState())
                             .focusRequester(focusRequester),
                         textStyle = MaterialTheme.typography.bodyLarge
                     )
-                    Box(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                    ){
-                        Column {
-                            HorizontalDivider(color = MaterialTheme.colorScheme.secondary)
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceAround
-                            ) {
-                                NoteScreenButton(
-                                    onClick = {
-                                        if (noteId != null && noteId != -1) {
-                                            viewModel.deleteNote(noteId)
-                                        }
-                                        navController.popBackStack()
-                                    }, imageVector = Icons.Outlined.Delete)
-                                NoteScreenButton(onClick = {}, imageVector = Icons.Outlined.Add)
-                                NoteScreenButton(onClick = {}, imageVector = Icons.Outlined.Add)
-                                NoteScreenButton(onClick = onExit, imageVector = Icons.Outlined.Done)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.secondary)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        NoteScreenButton(
+                            onClick = {
+                                if (noteId != null && noteId != -1) {
+                                    viewModel.deleteNote(noteId)
+                                }
+                                navController.popBackStack()
+                            }, imageVector = Icons.Outlined.Delete)
+                        NoteScreenButton(onClick = {}, imageVector = Icons.Outlined.Add)
+                        NoteScreenButton(onClick = {}, imageVector = Icons.Outlined.Add)
+                        NoteScreenButton(onClick = onExit, imageVector = Icons.Outlined.Done)
 
-                            }
-                        }
                     }
                 }
             }

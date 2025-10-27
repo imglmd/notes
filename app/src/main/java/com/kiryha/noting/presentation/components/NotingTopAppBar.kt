@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,6 +28,7 @@ fun NotingTopAppBar(
     titleText: String = "",
     onBackClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
+    backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
     var isBackClicked by remember { mutableStateOf(false) }
     var isSettingsClicked by remember { mutableStateOf(false) }
@@ -34,7 +36,7 @@ fun NotingTopAppBar(
 
     TopAppBar(
         colors = topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = backgroundColor,
             titleContentColor = MaterialTheme.colorScheme.onBackground
         ),
         navigationIcon ={

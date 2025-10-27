@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -120,6 +121,7 @@ fun MainScreen(
                 )
             }
         },
+        floatingActionButtonPosition = FabPosition.Center,
         modifier = Modifier.swipeToAction(
             direction = SwipeDirection.Left,
             onSwipe = { navController.navigate(NoteScreen())}
