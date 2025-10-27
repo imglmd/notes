@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.screens
+package com.kiryha.noting.presentation.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,9 +33,6 @@ import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.LoginScreen
 import com.kiryha.noting.presentation.navigation.MainScreen
-import com.kiryha.noting.presentation.viewmodel.AuthViewModel
-import com.kiryha.noting.presentation.viewmodel.states.AuthState
-import io.ktor.util.hex
 
 @Composable
 fun RegistrationScreen(

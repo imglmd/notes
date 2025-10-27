@@ -2,7 +2,7 @@ package com.kiryha.noting.utils
 
 import android.content.Context
 import androidx.core.content.edit
-import com.kiryha.noting.theme.ThemeMode
+import com.kiryha.noting.presentation.theme.ThemeMode
 
 object PreferencesManager {
     private const val PREFS_NAME = "NotesPrefs"

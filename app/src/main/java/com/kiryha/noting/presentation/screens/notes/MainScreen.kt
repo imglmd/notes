@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.screens
+package com.kiryha.noting.presentation.screens.notes
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -61,13 +61,12 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
-import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NoteItem
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.EXPLODE_BOUNDS_KEY
 import com.kiryha.noting.presentation.navigation.NoteScreen
 import com.kiryha.noting.presentation.navigation.SettingScreen
-import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import com.kiryha.noting.presentation.screens.notes.NoteViewModel
 import com.kiryha.noting.utils.SwipeDirection
 import com.kiryha.noting.utils.swipeToAction
 import kotlinx.coroutines.delay

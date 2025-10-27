@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.viewmodel.states
+package com.kiryha.noting.presentation.screens.auth
 
 data class AuthFormState(
     val email: String = "",

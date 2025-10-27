@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.viewmodel
+package com.kiryha.noting.presentation.screens.auth
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -6,8 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.kiryha.noting.data.AuthRepository
 import com.kiryha.noting.data.NoteRepository
 import com.kiryha.noting.domain.model.User
-import com.kiryha.noting.presentation.viewmodel.states.AuthFormState
-import com.kiryha.noting.presentation.viewmodel.states.AuthState
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
 import com.kiryha.noting.domain.usecase.ValidateUsername

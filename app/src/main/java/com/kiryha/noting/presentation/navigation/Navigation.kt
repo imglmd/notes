@@ -9,19 +9,18 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.kiryha.noting.presentation.screens.LoginScreen
-import com.kiryha.noting.presentation.screens.MainScreen
-import com.kiryha.noting.presentation.screens.NoteScreen
-import com.kiryha.noting.presentation.screens.RegistrationScreen
+import com.kiryha.noting.presentation.screens.auth.LoginScreen
+import com.kiryha.noting.presentation.screens.notes.MainScreen
+import com.kiryha.noting.presentation.screens.notes.NoteScreen
+import com.kiryha.noting.presentation.screens.auth.RegistrationScreen
 import com.kiryha.noting.presentation.screens.SettingScreen
-import com.kiryha.noting.presentation.viewmodel.AuthViewModel
-import com.kiryha.noting.presentation.viewmodel.NoteViewModel
-import com.kiryha.noting.theme.ThemeMode
+import com.kiryha.noting.presentation.screens.auth.AuthViewModel
+import com.kiryha.noting.presentation.screens.notes.NoteViewModel
+import com.kiryha.noting.presentation.theme.ThemeMode
 import kotlinx.serialization.Serializable
 
 @Serializable

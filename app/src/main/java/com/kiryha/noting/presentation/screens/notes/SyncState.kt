@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.viewmodel.states
+package com.kiryha.noting.presentation.screens.notes
 
 sealed class SyncState {
     object Idle : SyncState()

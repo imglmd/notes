@@ -1,4 +1,4 @@
-package com.kiryha.noting.theme
+package com.kiryha.noting.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

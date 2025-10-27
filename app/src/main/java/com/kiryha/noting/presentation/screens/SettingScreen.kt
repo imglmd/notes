@@ -27,9 +27,9 @@ import androidx.navigation.NavController
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.components.ProfileSection
 import com.kiryha.noting.presentation.components.RadioButtonGroup
-import com.kiryha.noting.presentation.viewmodel.AuthViewModel
-import com.kiryha.noting.presentation.viewmodel.NoteViewModel
-import com.kiryha.noting.theme.ThemeMode
+import com.kiryha.noting.presentation.screens.auth.AuthViewModel
+import com.kiryha.noting.presentation.screens.notes.NoteViewModel
+import com.kiryha.noting.presentation.theme.ThemeMode
 import com.kiryha.noting.utils.SwipeDirection
 import com.kiryha.noting.utils.swipeToAction
 
@@ -95,9 +95,9 @@ fun SettingScreen(
                 },
                 optionToTextStyle = { theme ->
                     when (theme) {
-                        ThemeMode.Light -> "Светлая" to null
-                        ThemeMode.System -> "Системная" to null
-                        ThemeMode.Dark -> "Темная" to null
+                        ThemeMode.Light -> "Light" to null
+                        ThemeMode.System -> "System" to null
+                        ThemeMode.Dark -> "Dark" to null
                     }
                 }
             )

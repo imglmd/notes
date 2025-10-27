@@ -1,18 +1,16 @@
-package com.kiryha.noting.presentation.screens
+package com.kiryha.noting.presentation.screens.notes
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
@@ -25,8 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,10 +51,7 @@ import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.EXPLODE_BOUNDS_KEY
-import com.kiryha.noting.presentation.viewmodel.NoteViewModel
-import com.kiryha.noting.theme.Red
-import com.kiryha.noting.utils.SwipeDirection
-import com.kiryha.noting.utils.swipeToAction
+import com.kiryha.noting.presentation.screens.notes.NoteViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -194,6 +187,8 @@ fun SharedTransitionScope.NoteScreen(
                     ) {
                         NoteScreenButton(
                             onClick = {
+                                keyboardController?.hide()
+                                isTextFieldEnabled = false
                                 if (noteId != null && noteId != -1) {
                                     viewModel.deleteNote(noteId)
                                 }

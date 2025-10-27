@@ -5,10 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
@@ -19,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.kiryha.noting.presentation.navigation.SetupNavGraph
-import com.kiryha.noting.presentation.viewmodel.AuthViewModel
-import com.kiryha.noting.presentation.viewmodel.NoteViewModel
-import com.kiryha.noting.theme.NotingTheme
+import com.kiryha.noting.presentation.screens.auth.AuthViewModel
+import com.kiryha.noting.presentation.screens.notes.NoteViewModel
+import com.kiryha.noting.presentation.theme.NotingTheme
 import com.kiryha.noting.utils.PreferencesManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

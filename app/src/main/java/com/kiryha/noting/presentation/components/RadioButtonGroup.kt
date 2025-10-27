@@ -26,7 +26,7 @@ fun <T> RadioButtonGroup(
     selectedOption: T,
     onOptionSelected: (T) -> Unit,
     optionToTextStyle: (T) -> Pair<String, TextStyle?>,
-    label: String = "Выберите опцию:",
+    label: String,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(top = 20.dp)) {

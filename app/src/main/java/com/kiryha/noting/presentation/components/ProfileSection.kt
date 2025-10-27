@@ -35,8 +35,8 @@ import androidx.navigation.NavController
 import com.kiryha.noting.R
 import com.kiryha.noting.presentation.navigation.LoginScreen
 import com.kiryha.noting.presentation.navigation.RegistrationScreen
-import com.kiryha.noting.presentation.viewmodel.AuthViewModel
-import com.kiryha.noting.presentation.viewmodel.states.AuthState
+import com.kiryha.noting.presentation.screens.auth.AuthViewModel
+import com.kiryha.noting.presentation.screens.auth.AuthState
 import com.kiryha.noting.utils.NetworkChecker
 
 @Composable
@@ -187,7 +187,7 @@ fun ProfileSection(
                 is AuthState.Error -> {
                     Column {
                         Text(
-                            text = "Ошибка: ${(authState as AuthState.Error).message}",
+                            text = "Error: ${(authState as AuthState.Error).message}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(15.dp)

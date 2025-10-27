@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.screens
+package com.kiryha.noting.presentation.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -35,8 +35,6 @@ import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.MainScreen
 import com.kiryha.noting.presentation.navigation.RegistrationScreen
-import com.kiryha.noting.presentation.viewmodel.AuthViewModel
-import com.kiryha.noting.presentation.viewmodel.states.AuthState
 
 @Composable
 fun LoginScreen(

@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.viewmodel
+package com.kiryha.noting.presentation.screens.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,8 +7,8 @@ import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.domain.status.ResultWithStatus
-import com.kiryha.noting.presentation.TestData.testNotes
-import com.kiryha.noting.presentation.viewmodel.states.SyncState
+import com.kiryha.noting.presentation.TestData
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +17,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
@@ -46,7 +47,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         )
     }.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
+        SharingStarted.Companion.WhileSubscribed(5000),
         ResultWithStatus(emptyList(), NoteStatus.Success)
     )
 
@@ -122,7 +123,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
                     _syncState.value = SyncState.Success
 
                     // Автоматически сбрасываем состояние через 2 секунды
-                    kotlinx.coroutines.delay(2000)
+                    delay(2000)
                     if (_syncState.value is SyncState.Success) {
                         _syncState.value = SyncState.Idle
                     }
@@ -133,7 +134,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
                     )
 
                     // Автоматически сбрасываем ошибку через 3 секунды
-                    kotlinx.coroutines.delay(3000)
+                    delay(3000)
                     if (_syncState.value is SyncState.Error) {
                         _syncState.value = SyncState.Idle
                     }
@@ -201,7 +202,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
     fun addTestNotes() {
         viewModelScope.launch {
-            testNotes.forEach { note ->
+            TestData.testNotes.forEach { note ->
                 repository.upsertNote(note)
             }
 

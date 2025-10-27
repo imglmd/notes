@@ -11,8 +11,8 @@ import com.kiryha.noting.data.source.network.NetworkDataSource
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
 import com.kiryha.noting.domain.usecase.ValidateUsername
-import com.kiryha.noting.presentation.viewmodel.AuthViewModel
-import com.kiryha.noting.presentation.viewmodel.NoteViewModel
+import com.kiryha.noting.presentation.screens.auth.AuthViewModel
+import com.kiryha.noting.presentation.screens.notes.NoteViewModel
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
