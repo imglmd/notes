@@ -27,12 +27,13 @@ class AuthRepository(
         username: String
     ): Result<Unit> {
         return try {
-            if (networkSource.isEmailExists(email)) {
-                return Result.failure(Exception("This email address is already in use"))
-            }
 
             if (networkSource.isUsernameExists(username)) {
                 return Result.failure(Exception("This username is already taken."))
+            }
+
+            if (networkSource.isEmailExists(email)) {
+                return Result.failure(Exception("This email address is already in use"))
             }
 
             auth.signUpWith(Email) {

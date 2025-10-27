@@ -4,11 +4,11 @@ import android.content.Context
 import com.kiryha.noting.data.source.local.DeletedNote
 import com.kiryha.noting.data.source.local.DeletedNoteDao
 import com.kiryha.noting.domain.status.NoteStatus
-    import com.kiryha.noting.domain.status.ResultWithStatus
-    import com.kiryha.noting.data.source.local.NoteDao
-    import com.kiryha.noting.data.source.network.NetworkDataSource
-    import com.kiryha.noting.domain.model.Note
-    import com.kiryha.noting.utils.NetworkChecker
+import com.kiryha.noting.domain.status.ResultWithStatus
+import com.kiryha.noting.data.source.local.NoteDao
+import com.kiryha.noting.data.source.network.NetworkDataSource
+import com.kiryha.noting.domain.model.Note
+import com.kiryha.noting.utils.NetworkChecker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.UUID
