@@ -105,6 +105,7 @@ fun SharedTransitionScope.NoteScreen(
             if (noteId != null && noteId != -1) {
                 viewModel.deleteNote(noteId)
             }
+            keyboardController?.hide()
             navController.popBackStack()
         } else {
             val note = if (noteId == null) {
@@ -121,6 +122,7 @@ fun SharedTransitionScope.NoteScreen(
                     }
                 )
             }
+            keyboardController?.hide()
             viewModel.upsertNote(note)
             navController.popBackStack()
         }
