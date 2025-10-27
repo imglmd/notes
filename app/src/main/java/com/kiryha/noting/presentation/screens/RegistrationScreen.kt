@@ -22,7 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kiryha.noting.R
@@ -46,6 +50,9 @@ fun RegistrationScreen(
     var repeatPassword by remember { mutableStateOf("") }
     var repeatPasswordError by remember { mutableStateOf<String?>(null) }
 
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
@@ -54,7 +61,25 @@ fun RegistrationScreen(
                     popUpTo(0) { inclusive = true }
                 }
             }
-            else -> {}
+            else -> {
+                focusRequester.requestFocus()
+            }
+        }
+    }
+
+    val validateAndSignUp = {
+        when {
+            repeatPassword.isBlank() -> {
+                repeatPasswordError = "Please repeat your password"
+            }
+            repeatPassword != formState.password -> {
+                repeatPasswordError = "Passwords don't match"
+            }
+            else -> {
+                repeatPasswordError = null
+                focusManager.clearFocus()
+                viewModel.signUp()
+            }
         }
     }
 
@@ -93,6 +118,8 @@ fun RegistrationScreen(
                     label = "username",
                     errorMessage =  formState.usernameError,
                     value = formState.username,
+                    focusRequester = focusRequester,
+                    onImeAction = {focusManager.moveFocus(FocusDirection.Down)},
                     onValueChange =  viewModel::onUsernameChange
                 )
                 Spacer(Modifier.height(10.dp))
@@ -100,6 +127,7 @@ fun RegistrationScreen(
                     label = "email",
                     errorMessage =  formState.emailError,
                     value = formState.email,
+                    onImeAction = {focusManager.moveFocus(FocusDirection.Down)},
                     onValueChange =  viewModel::onEmailChange
                 )
                 Spacer(Modifier.height(10.dp))
@@ -107,6 +135,7 @@ fun RegistrationScreen(
                     label = "password",
                     errorMessage =  formState.passwordError,
                     value = formState.password,
+                    onImeAction = {focusManager.moveFocus(FocusDirection.Down)},
                     onValueChange =  viewModel::onPasswordChange
                 )
                 Spacer(Modifier.height(10.dp))
@@ -114,26 +143,14 @@ fun RegistrationScreen(
                     label = "repeat password",
                     errorMessage = repeatPasswordError,
                     value = repeatPassword,
+                    imeAction = ImeAction.Done,
+                    onImeAction = validateAndSignUp,
                     onValueChange =  {   repeatPassword = it
                         repeatPasswordError = null}
                 )
                 Spacer(Modifier.height(100.dp))
                 HorizontalButton(
-                    onClick = {
-                        // Валидация повтора пароля
-                        when {
-                            repeatPassword.isBlank() -> {
-                                repeatPasswordError = "Please repeat your password"
-                            }
-                            repeatPassword != formState.password -> {
-                                repeatPasswordError = "Passwords don't match"
-                            }
-                            else -> {
-                                repeatPasswordError = null
-                                viewModel.signUp()
-                            }
-                        }
-                    },
+                    onClick = validateAndSignUp,
                     buttonText = "Sign up",
                     text = "Already have an account? Log in",
                     onTextClick = {

@@ -31,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -56,7 +58,9 @@ fun AuthTextField(
         else -> KeyboardType.Text
     },
     imeAction: ImeAction = ImeAction.Next,
-    onImeAction: () -> Unit = {}
+    onImeAction: () -> Unit = {},
+
+    focusRequester: FocusRequester = FocusRequester()
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
     val hasError = errorMessage != null
@@ -100,7 +104,8 @@ fun AuthTextField(
             modifier = Modifier
                 .height(55.dp)
                 .fillMaxWidth()
-                .padding(vertical = 5.dp),
+                .padding(vertical = 5.dp)
+                .focusRequester(focusRequester),
             textStyle = MaterialTheme.typography.labelLarge.copy(
                 color = MaterialTheme.colorScheme.primary
             ),

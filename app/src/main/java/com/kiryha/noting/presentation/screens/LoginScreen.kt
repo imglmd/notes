@@ -18,9 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -42,6 +47,9 @@ fun LoginScreen(
     val formState by viewModel.formState.collectAsState()
     val authState by viewModel.authState.collectAsState()
 
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
@@ -50,7 +58,9 @@ fun LoginScreen(
                     popUpTo(0) { inclusive = true }
                 }
             }
-            else -> {}
+            else -> {
+                focusRequester.requestFocus()
+            }
         }
     }
 
@@ -87,6 +97,8 @@ fun LoginScreen(
                     label = "email",
                     errorMessage = formState.emailError,
                     value = formState.email,
+                    focusRequester = focusRequester,
+                    onImeAction = {focusManager.moveFocus(FocusDirection.Down)},
                     onValueChange = viewModel::onEmailChange
                 )
                 Spacer(Modifier.height(20.dp))
@@ -94,6 +106,11 @@ fun LoginScreen(
                     label = "password",
                     errorMessage = formState.passwordError,
                     value = formState.password,
+                    imeAction = ImeAction.Done,
+                    onImeAction = {
+                        viewModel.signIn()
+                        focusManager.clearFocus()
+                    },
                     onValueChange = viewModel::onPasswordChange
                 )
                 Text(
@@ -107,7 +124,10 @@ fun LoginScreen(
                 Spacer(Modifier.height(100.dp))
 
                 HorizontalButton(
-                    onClick = { viewModel.signIn() },
+                    onClick = {
+                        viewModel.signIn()
+                        focusManager.clearFocus()
+                              },
                     buttonText = "Log in",
                     text= "Don't  have an account? Sign up",
                     onTextClick = { navController.navigate(RegistrationScreen) }
