@@ -33,8 +33,8 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         installSplashScreen()
+        enableEdgeToEdge()
         setContent {
             var currentTheme by remember { mutableStateOf(PreferencesManager.getThemeMode(this@MainActivity)) }
             NotingTheme(
