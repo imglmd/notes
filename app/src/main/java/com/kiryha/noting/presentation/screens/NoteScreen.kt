@@ -74,6 +74,7 @@ fun SharedTransitionScope.NoteScreen(
     val selectedNote by viewModel.selectedNote.collectAsState()
     val status by viewModel.status.collectAsState()
 
+    var isTextFieldEnabled by remember { mutableStateOf(true) }
     var noteText by remember { mutableStateOf("") }
     var isSaving by remember { mutableStateOf(false) }
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
@@ -98,6 +99,7 @@ fun SharedTransitionScope.NoteScreen(
     val onExit: () -> Unit = lambda@{
         if (isSaving) return@lambda
 
+        isTextFieldEnabled = false
         isSaving = true
 
         val trimmedText = noteText.trim()
@@ -164,11 +166,14 @@ fun SharedTransitionScope.NoteScreen(
                     TextField(
                         value = noteText,
                         onValueChange = { noteText = it },
+                        enabled = isTextFieldEnabled,
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,
                             focusedContainerColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
+                            disabledTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            disabledContainerColor = Color.Transparent,
                             focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
                             unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
                             cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
