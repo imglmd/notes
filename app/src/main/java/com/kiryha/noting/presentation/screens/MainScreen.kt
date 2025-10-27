@@ -1,6 +1,9 @@
 package com.kiryha.noting.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -61,6 +64,7 @@ import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NoteItem
 import com.kiryha.noting.presentation.components.NotingTopAppBar
+import com.kiryha.noting.presentation.navigation.EXPLODE_BOUNDS_KEY
 import com.kiryha.noting.presentation.navigation.NoteScreen
 import com.kiryha.noting.presentation.navigation.SettingScreen
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
@@ -69,11 +73,12 @@ import com.kiryha.noting.utils.swipeToAction
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun MainScreen(
+fun SharedTransitionScope.MainScreen(
     navController: NavController,
     viewModel: NoteViewModel,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val groupedNotes by viewModel.groupedNotes.collectAsState()
     val status by viewModel.status.collectAsState()
@@ -111,7 +116,10 @@ fun MainScreen(
             ExtendedFloatingActionButton(
                 onClick = {navController.navigate(NoteScreen())},
                 containerColor = MaterialTheme.colorScheme.background,
-                modifier = Modifier.imePadding()
+                modifier = Modifier.imePadding().sharedBounds(
+                    sharedContentState = rememberSharedContentState(key = EXPLODE_BOUNDS_KEY),
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
             ) {
                 Text(
                     text = "Add Note",

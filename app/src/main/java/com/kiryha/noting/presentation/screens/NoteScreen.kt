@@ -1,5 +1,8 @@
 package com.kiryha.noting.presentation.screens
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -50,6 +54,7 @@ import androidx.navigation.NavController
 import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.NotingTopAppBar
+import com.kiryha.noting.presentation.navigation.EXPLODE_BOUNDS_KEY
 import com.kiryha.noting.presentation.viewmodel.NoteViewModel
 import com.kiryha.noting.theme.Red
 import com.kiryha.noting.utils.SwipeDirection
@@ -57,11 +62,14 @@ import com.kiryha.noting.utils.swipeToAction
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun NoteScreen(
+fun SharedTransitionScope.NoteScreen(
     noteId: Int? = null,
     navController: NavController,
     viewModel: NoteViewModel,
+    animatedVisibilityScope: AnimatedVisibilityScope
     ) {
     val selectedNote by viewModel.selectedNote.collectAsState()
     val status by viewModel.status.collectAsState()
@@ -130,6 +138,9 @@ fun NoteScreen(
         modifier = Modifier.swipeToAction(
             direction = SwipeDirection.Right,
             onSwipe = onExit
+        ).sharedBounds(
+            sharedContentState = rememberSharedContentState(key = EXPLODE_BOUNDS_KEY),
+            animatedVisibilityScope = animatedVisibilityScope
         ),
         contentWindowInsets = WindowInsets()
     ) { innerPadding ->
