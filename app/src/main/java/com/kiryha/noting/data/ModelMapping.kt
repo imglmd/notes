@@ -13,6 +13,7 @@ fun Note.toLocal(userId: String?) = LocalNote(
     text = text,
     date = date,
     userId = userId,
+    isPinned = isPinned,
     isSynced = false,
     isDeleted = false
 )
@@ -34,6 +35,7 @@ fun NetworkNote.toLocal() = LocalNote(
     text = text,
     date = date,
     userId = user_id,
+    isPinned = is_pinned,
     isSynced = true,
     isDeleted = false
 )

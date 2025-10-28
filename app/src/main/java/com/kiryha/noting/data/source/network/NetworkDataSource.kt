@@ -58,7 +58,9 @@ class NetworkDataSource(private val supabase: SupabaseClient) {
             ?: throw IllegalStateException("User not authenticated")
 
         val noteWithUser = note.copy(user_id = userId)
-        notesTable.upsert(noteWithUser)
+        notesTable.upsert(noteWithUser) {
+            onConflict = "app_id"
+        }
     }
 
     suspend fun deleteNoteById(appId: Int) {

@@ -1,5 +1,6 @@
 package com.kiryha.noting.presentation.screens.notes
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kiryha.noting.data.NoteRepository
