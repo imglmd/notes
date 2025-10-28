@@ -24,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -177,6 +179,7 @@ fun SharedTransitionScope.NoteScreen(
                             focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
                             unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
                             cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            disabledIndicatorColor = Color.Transparent
 
                         ),
                         modifier = Modifier
@@ -187,7 +190,6 @@ fun SharedTransitionScope.NoteScreen(
                             .focusRequester(focusRequester),
                         textStyle = MaterialTheme.typography.bodyLarge
                     )
-                    HorizontalDivider(color = MaterialTheme.colorScheme.primary)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
@@ -229,9 +231,13 @@ fun NoteScreenButton(
     onClick: () -> Unit,
     iconRes: Int,
 ) {
-    IconButton(
+    Button(
         onClick = onClick,
-        modifier = modifier
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
     ) {
         Icon(
             painter = painterResource(iconRes),
