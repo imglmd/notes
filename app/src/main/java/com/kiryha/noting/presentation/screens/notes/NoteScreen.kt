@@ -186,6 +186,8 @@ fun SharedTransitionScope.NoteScreen(
                             .focusRequester(focusRequester),
                         textStyle = MaterialTheme.typography.bodyLarge
                     )
+
+                    
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
