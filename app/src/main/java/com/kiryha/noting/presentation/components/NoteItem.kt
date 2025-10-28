@@ -9,7 +9,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -91,6 +93,7 @@ fun NoteItem(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
+            Spacer(Modifier.height(10.dp))
             Text(
                 text = displayDate,
                 modifier = Modifier.align(Alignment.End),
@@ -99,7 +102,6 @@ fun NoteItem(
             )
         }
 
-        // ✨ Иконка закрепления с анимацией
         AnimatedVisibility(
             visible = note.isPinned,
             enter = scaleIn() + fadeIn(),
@@ -112,8 +114,7 @@ fun NoteItem(
                     .background(
                         color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                         shape = CircleShape
-                    )
-                    .padding(4.dp),
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

@@ -134,7 +134,7 @@ fun SharedTransitionScope.MainScreen(
                     text = "Add Note",
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 16.dp)
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 16.dp).padding(top = 5.dp)
                 )
             }
         },
@@ -195,7 +195,7 @@ fun SharedTransitionScope.MainScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 12.dp)
             ) {
                 PullToRefreshBox(
                     onRefresh = onRefresh,
@@ -287,12 +287,6 @@ fun SharedTransitionScope.MainScreen(
                 }
             }
         }
-
-        /*HorizontalButton(
-            onClick = { navController.navigate(NoteScreen()) },
-            innerPadding = innerPadding,
-            text = "New Note"
-        )*/
     }
 }
 
