@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -77,7 +78,7 @@ fun CarouselNoteItem(
                         pressOffset = DpOffset(it.x.toDp(), it.y.toDp())
                     }
                 )
-            }.height(160.dp).widthIn(max = 140.dp),
+            }.widthIn(max = 140.dp).heightIn(max = 160.dp),
     ) {
         Column(Modifier.fillMaxHeight().padding(6.dp)) {
             Text(
@@ -93,42 +94,15 @@ fun CarouselNoteItem(
                 color = MaterialTheme.colorScheme.secondary,
             )
         }
-        DropdownMenu(
+        NoteContextMenu(
             expanded = isContextMenuVisible,
             onDismissRequest = { isContextMenuVisible = false },
-            offset = pressOffset.copy(
-                y = pressOffset.y - itemHeight,
-            ),
-            shape = RoundedCornerShape(20.dp),
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-        ) {
-            DropdownMenuItem(
-                text = { Text("Edit", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-                onClick = {
-                    onEditClick()
-                    isContextMenuVisible = false
-                },
-            )
-            DropdownMenuItem(
-                text = {
-                    Text(if (note.isPinned) "Unpin" else "Pin",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer)
-                },
-                onClick = {
-                    onPinClick()
-                    isContextMenuVisible = false
-                },
-            )
-            DropdownMenuItem(
-                text = { Text("Delete", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-                onClick = {
-                    onDeleteClick()
-                    isContextMenuVisible = false
-                },
-            )
-
-        }
+            offset = pressOffset.copy(y = pressOffset.y - itemHeight),
+            isPinned = note.isPinned,
+            onPinClick = onPinClick,
+            onEditClick = onEditClick,
+            onDeleteClick = onDeleteClick
+        )
     }
 
 }
