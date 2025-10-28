@@ -1,11 +1,14 @@
 package com.kiryha.noting.presentation.components
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,55 +36,61 @@ fun NoteContextMenu(
         shape = RoundedCornerShape(20.dp),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
-        DropdownMenuItem(
-            text = {
-                Text(
-                    if (isPinned) "Unpin" else "Pin",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    painter = if (isPinned) painterResource(R.drawable.unpin) else painterResource(R.drawable.bookmark),
-                    contentDescription = null, modifier = Modifier.size(22.dp))
-            },
+        ContextMenuItem(
+            text = if (isPinned) "Unpin" else "Pin",
+            iconRes = if (isPinned) R.drawable.unpin else R.drawable.bookmark,
             onClick = {
                 onPinClick()
                 onDismissRequest()
-            },
+            }
         )
-        DropdownMenuItem(
-            text = {
-                Text(
-                    "Edit",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            },
-            leadingIcon = {
-                Icon(painter = painterResource(R.drawable.edit), contentDescription = null, modifier = Modifier.size(22.dp))
-            },
+        ContextMenuItem(
+            text = "Edit",
+            iconRes = R.drawable.edit,
             onClick = {
                 onEditClick()
                 onDismissRequest()
-            },
+            }
         )
-        DropdownMenuItem(
-            text = {
-                Text(
-                    "Delete",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            },
-            leadingIcon = {
-                Icon(painter = painterResource(R.drawable.trash), contentDescription = null, modifier = Modifier.size(22.dp))
-            },
+        Divider(
+            modifier = Modifier.padding(horizontal = 12.dp),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+            thickness = 0.7.dp
+        )
+        ContextMenuItem(
+            text = "Delete",
+            iconRes = R.drawable.trash,
             onClick = {
                 onDeleteClick()
                 onDismissRequest()
-            },
+            }
         )
     }
+}
+
+@Composable
+fun ContextMenuItem(
+    text: String,
+    iconRes: Int,
+    onClick: () -> Unit
+) {
+    DropdownMenuItem(
+        text = {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
+        onClick = onClick,
+        leadingIcon = {
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+        },
+    )
 }
