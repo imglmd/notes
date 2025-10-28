@@ -114,7 +114,9 @@ fun SharedTransitionScope.NoteScreen(
                     text = trimmedText,
                     date = selectedNote.item.date.ifEmpty {
                         LocalDateTime.now().format(dateFormatter)
-                    }
+                    },
+                    isPinned = selectedNote.item.isPinned
+
                 )
             }
             keyboardController?.hide()

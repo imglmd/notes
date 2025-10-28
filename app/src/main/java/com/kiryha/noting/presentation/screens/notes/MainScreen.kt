@@ -217,7 +217,26 @@ fun SharedTransitionScope.MainScreen(
                                 NoteSearchBar(searchText, viewModel)
                             }
                             item(
-                                key = "pin_carousel",
+                                key = "pinned_header",
+                                span = StaggeredGridItemSpan.FullLine
+                            ) {
+                                if (pinnedNotes.item.isNotEmpty()){
+                                    Text(
+                                        text = "Pinned",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(
+                                                top = 25.dp,
+                                                bottom = 5.dp,
+                                                start = 4.dp
+                                            )
+                                    )
+                                }
+                            }
+                            item(
+                                key = "pinned_notes",
                                 span = StaggeredGridItemSpan.FullLine
                             ) {
                                 val round = 18

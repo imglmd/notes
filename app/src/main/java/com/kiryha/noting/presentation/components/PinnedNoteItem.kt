@@ -4,10 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -21,9 +24,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.kiryha.noting.domain.model.Note
@@ -68,11 +77,11 @@ fun CarouselNoteItem(
                         pressOffset = DpOffset(it.x.toDp(), it.y.toDp())
                     }
                 )
-            }.height(160.dp).width(140.dp),
+            }.height(160.dp).widthIn(max = 140.dp),
     ) {
-        Column(Modifier.fillMaxSize().padding(6.dp)) {
+        Column(Modifier.fillMaxHeight().padding(6.dp)) {
             Text(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).bottomFade(),
                 text = note.text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -123,3 +132,22 @@ fun CarouselNoteItem(
     }
 
 }
+
+
+fun Modifier.bottomFade(fadeHeight: Dp = 24.dp): Modifier = this.then(
+    Modifier
+        .graphicsLayer() { alpha = 0.99f }
+        .drawWithContent {
+            drawContent()
+            val fadePx = fadeHeight.toPx()
+            val colors = listOf(Color.Black, Color.Transparent)
+            drawRect(
+                brush = Brush.verticalGradient(
+                    colors = colors,
+                    startY = size.height - fadePx,
+                    endY = size.height
+                ),
+                blendMode = BlendMode.DstIn
+            )
+        }
+)
