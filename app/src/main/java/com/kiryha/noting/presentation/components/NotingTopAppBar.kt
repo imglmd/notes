@@ -1,9 +1,7 @@
 package com.kiryha.noting.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,7 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.kiryha.noting.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +51,8 @@ fun NotingTopAppBar(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        painter = painterResource(R.drawable.arrow_left),
+                        modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = "Back Button"
                     )
@@ -68,7 +70,8 @@ fun NotingTopAppBar(
                     },
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Settings,
+                        painter = painterResource(R.drawable.settings),
+                        modifier = Modifier.size(22.dp),
                         tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = "Settings"
                     )

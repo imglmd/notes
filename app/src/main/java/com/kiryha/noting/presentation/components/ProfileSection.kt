@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -228,7 +226,7 @@ private fun UnauthenticatedContent(navController: NavController) {
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
+                painter = painterResource(R.drawable.chevron_right),
                 contentDescription = null,
                 modifier = Modifier.size(30.dp)
             )
@@ -250,7 +248,7 @@ private fun UnauthenticatedContent(navController: NavController) {
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
+                painter = painterResource(R.drawable.chevron_right),
                 contentDescription = null,
                 modifier = Modifier.size(30.dp),
                 tint = MaterialTheme.colorScheme.secondary
