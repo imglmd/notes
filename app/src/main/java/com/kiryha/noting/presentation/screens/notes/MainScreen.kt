@@ -41,8 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -63,15 +61,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
-import com.kiryha.noting.presentation.components.CarouselNoteItem
+import com.kiryha.noting.presentation.components.PinnedNoteItem
+import com.kiryha.noting.presentation.components.Header
 import com.kiryha.noting.presentation.components.NoteItem
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.EXPLODE_BOUNDS_KEY
 import com.kiryha.noting.presentation.navigation.NoteScreen
 import com.kiryha.noting.presentation.navigation.SettingScreen
-import com.kiryha.noting.presentation.screens.notes.NoteViewModel
 import com.kiryha.noting.utils.SwipeDirection
 import com.kiryha.noting.utils.swipeToAction
 import kotlinx.coroutines.delay
@@ -109,6 +108,8 @@ fun SharedTransitionScope.MainScreen(
             gridState.firstVisibleItemIndex == 0
         }
     }
+    val hasPinnedNotes = pinnedNotes.item.isNotEmpty()
+
     Scaffold(
         topBar = {
             NotingTopAppBar(
@@ -134,7 +135,9 @@ fun SharedTransitionScope.MainScreen(
                     text = "Add Note",
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 16.dp).padding(top = 5.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp, vertical = 16.dp)
+                        .padding(top = 5.dp)
                 )
             }
         },
@@ -217,46 +220,17 @@ fun SharedTransitionScope.MainScreen(
                                 NoteSearchBar(searchText, viewModel)
                             }
                             item(
-                                key = "pinned_header",
+                                key = "pinned_section",
                                 span = StaggeredGridItemSpan.FullLine
                             ) {
-                                if (pinnedNotes.item.isNotEmpty()){
-                                    Text(
-                                        text = "Pinned",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(
-                                                top = 25.dp,
-                                                bottom = 5.dp,
-                                                start = 4.dp
-                                            )
-                                    )
-                                }
-                            }
-                            item(
-                                key = "pinned_notes",
-                                span = StaggeredGridItemSpan.FullLine
-                            ) {
-                                val round = 18
-                                LazyRow(
-                                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(round.dp)),
-                                    state = rememberLazyListState(),
-                                ) {
-                                    pinnedNotes.item.forEach { noteItem ->
-                                        item {
-                                            CarouselNoteItem(
-                                                note = noteItem,
-                                                onNoteClick = { navController.navigate(NoteScreen(noteItem.id)) },
-                                                onEditClick = { navController.navigate(NoteScreen(noteItem.id)) },
-                                                onDeleteClick = { viewModel.deleteNote(noteItem.id) },
-                                                onPinClick = { viewModel.togglePinNote(noteItem)},
-                                                round = round
-                                            )
-                                        }
-                                    }
-                                }
+                                PinnedNotesSection(
+                                    hasPinnedNotes = hasPinnedNotes,
+                                    pinnedNotes = pinnedNotes.item,
+                                    onNoteClick = { noteId -> navController.navigate(NoteScreen(noteId)) },
+                                    onEditClick = { noteId -> navController.navigate(NoteScreen(noteId)) },
+                                    onDeleteClick = { noteId -> viewModel.deleteNote(noteId) },
+                                    onPinClick = { note -> viewModel.togglePinNote(note) }
+                                )
                             }
                             groupedNotes.item.forEach { listItem ->
                                 when (listItem) {
@@ -265,18 +239,7 @@ fun SharedTransitionScope.MainScreen(
                                             key = "header_${listItem.key}",
                                             span = StaggeredGridItemSpan.FullLine
                                         ) {
-                                            Text(
-                                                text = listItem.month,
-                                                style = MaterialTheme.typography.titleLarge,
-                                                color = MaterialTheme.colorScheme.primary,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(
-                                                        top = 25.dp,
-                                                        bottom = 5.dp,
-                                                        start = 4.dp
-                                                    )
-                                            )
+                                            Header(listItem.month)
                                         }
                                     }
                                     is NoteListItem.NoteItem -> {
@@ -309,6 +272,69 @@ fun SharedTransitionScope.MainScreen(
     }
 }
 
+@Composable
+fun PinnedNotesSection(
+    hasPinnedNotes: Boolean,
+    pinnedNotes: List<Note>,
+    onNoteClick: (Int) -> Unit,
+    onEditClick: (Int) -> Unit,
+    onDeleteClick: (Int) -> Unit,
+    onPinClick: (Note) -> Unit
+) {
+
+    AnimatedVisibility(
+        visible = hasPinnedNotes,
+        enter = slideInVertically(
+            initialOffsetY = { fullHeight -> -fullHeight / 2 },
+            animationSpec = tween(
+                durationMillis = 400,
+                easing = androidx.compose.animation.core.FastOutSlowInEasing
+            )
+        ) + fadeIn(
+            animationSpec = tween(
+                durationMillis = 300,
+                delayMillis = 100
+            )
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { fullHeight -> -fullHeight / 2 },
+            animationSpec = tween(
+                durationMillis = 300,
+                easing = androidx.compose.animation.core.FastOutSlowInEasing
+            )
+        ) + fadeOut(
+            animationSpec = tween(
+                durationMillis = 250
+            )
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Header("Pinned")
+            val round = 18
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(round.dp)),
+                state = rememberLazyListState(),
+            ) {
+                pinnedNotes.forEach { noteItem ->
+                    item {
+                        PinnedNoteItem(
+                            note = noteItem,
+                            onNoteClick = { onNoteClick(noteItem.id) },
+                            onEditClick = { onEditClick(noteItem.id)},
+                            onDeleteClick = { onDeleteClick(noteItem.id) },
+                            onPinClick = { onPinClick(noteItem)},
+                            round = round
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun NoteSearchBar(
