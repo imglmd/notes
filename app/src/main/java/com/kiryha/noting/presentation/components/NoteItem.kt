@@ -1,17 +1,24 @@
 package com.kiryha.noting.presentation.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,11 +29,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.kiryha.noting.R
 import com.kiryha.noting.domain.model.Note
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -58,7 +69,10 @@ fun NoteItem(
     Box(
         modifier = Modifier
             .onSizeChanged { itemHeight = with(density) { it.height.toDp() } }
-            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(16.dp))
+            .background(
+                MaterialTheme.colorScheme.primaryContainer,
+                shape = RoundedCornerShape(16.dp)
+            )
             .pointerInput(true) {
                 detectTapGestures(
                     onTap = { onNoteClick() },
@@ -84,6 +98,34 @@ fun NoteItem(
                 color = MaterialTheme.colorScheme.secondary,
             )
         }
+
+        // ✨ Иконка закрепления с анимацией
+        AnimatedVisibility(
+            visible = note.isPinned,
+            enter = scaleIn() + fadeIn(),
+            exit = scaleOut() + fadeOut(),
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
+                        shape = CircleShape
+                    )
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.bookmark),
+                    contentDescription = "Pinned",
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .size(16.dp)
+                )
+            }
+        }
+
         DropdownMenu(
             expanded = isContextMenuVisible,
             onDismissRequest = { isContextMenuVisible = false },
@@ -94,7 +136,13 @@ fun NoteItem(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
         ) {
             DropdownMenuItem(
-                text = { Text("Edit", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer) },
+                text = {
+                    Text(
+                        "Edit",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                },
                 onClick = {
                     onEditClick()
                     isContextMenuVisible = false
@@ -102,9 +150,11 @@ fun NoteItem(
             )
             DropdownMenuItem(
                 text = {
-                    Text(if (note.isPinned) "Unpin" else "Pin",
+                    Text(
+                        if (note.isPinned) "Unpin" else "Pin",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 },
                 onClick = {
                     onPinClick()
@@ -112,7 +162,13 @@ fun NoteItem(
                 },
             )
             DropdownMenuItem(
-                text = { Text("Delete", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer) },
+                text = {
+                    Text(
+                        "Delete",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                },
                 onClick = {
                     onDeleteClick()
                     isContextMenuVisible = false

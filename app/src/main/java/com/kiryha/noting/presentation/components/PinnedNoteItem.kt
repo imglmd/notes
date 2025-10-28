@@ -5,7 +5,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -37,7 +36,8 @@ fun CarouselNoteItem(
     onNoteClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onPinClick: () -> Unit
+    onPinClick: () -> Unit,
+    round: Int = 16
 ) {
     var isContextMenuVisible by rememberSaveable { mutableStateOf(false) }
     var pressOffset by remember { mutableStateOf(DpOffset.Zero) }
@@ -59,7 +59,7 @@ fun CarouselNoteItem(
         modifier = Modifier
             .onSizeChanged { itemHeight = with(density) { it.height.toDp() } }
             .padding(horizontal = 2.dp)
-            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(round.dp))
             .pointerInput(true) {
                 detectTapGestures(
                     onTap = { onNoteClick() },

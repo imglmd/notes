@@ -220,8 +220,9 @@ fun SharedTransitionScope.MainScreen(
                                 key = "pin_carousel",
                                 span = StaggeredGridItemSpan.FullLine
                             ) {
+                                val round = 18
                                 LazyRow(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(round.dp)),
                                     state = rememberLazyListState(),
                                 ) {
                                     pinnedNotes.item.forEach { noteItem ->
@@ -231,7 +232,8 @@ fun SharedTransitionScope.MainScreen(
                                                 onNoteClick = { navController.navigate(NoteScreen(noteItem.id)) },
                                                 onEditClick = { navController.navigate(NoteScreen(noteItem.id)) },
                                                 onDeleteClick = { viewModel.deleteNote(noteItem.id) },
-                                                onPinClick = { viewModel.togglePinNote(noteItem)}
+                                                onPinClick = { viewModel.togglePinNote(noteItem)},
+                                                round = round
                                             )
                                         }
                                     }
