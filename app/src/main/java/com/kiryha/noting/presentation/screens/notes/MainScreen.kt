@@ -194,79 +194,77 @@ fun SharedTransitionScope.MainScreen(
                         )
                 )
             }
-
-            Column(
+            PullToRefreshBox(
+                onRefresh = onRefresh,
+                isRefreshing = isRefreshing,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 12.dp)
             ) {
-                PullToRefreshBox(
-                    onRefresh = onRefresh,
-                    isRefreshing = isRefreshing,
-                ) {
-                    LazyVerticalStaggeredGrid(
-                        state = gridState,
-                        columns = StaggeredGridCells.Fixed(2),
-                        verticalItemSpacing = 4.dp,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
-                        content = {
-                            item(
-                                key = "search_bar",
-                                span = StaggeredGridItemSpan.FullLine
-                            ) {
-                                NoteSearchBar(searchText, viewModel)
-                            }
-                            item(
-                                key = "pinned_section",
-                                span = StaggeredGridItemSpan.FullLine
-                            ) {
-                                PinnedNotesSection(
-                                    hasPinnedNotes = hasPinnedNotes,
-                                    pinnedNotes = pinnedNotes.item,
-                                    onNoteClick = { noteId -> navController.navigate(NoteScreen(noteId)) },
-                                    onEditClick = { noteId -> navController.navigate(NoteScreen(noteId)) },
-                                    onDeleteClick = { noteId -> viewModel.deleteNote(noteId) },
-                                    onPinClick = { note -> viewModel.togglePinNote(note) }
-                                )
-                            }
-                            groupedNotes.item.forEach { listItem ->
-                                when (listItem) {
-                                    is NoteListItem.MonthHeader -> {
-                                        item(
-                                            key = "header_${listItem.key}",
-                                            span = StaggeredGridItemSpan.FullLine
-                                        ) {
-                                            Header(listItem.month)
-                                        }
+                LazyVerticalStaggeredGrid(
+                    state = gridState,
+                    columns = StaggeredGridCells.Fixed(2),
+                    verticalItemSpacing = 4.dp,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+                    content = {
+                        item(
+                            key = "search_bar",
+                            span = StaggeredGridItemSpan.FullLine
+                        ) {
+                            NoteSearchBar(searchText, viewModel)
+                        }
+                        item(
+                            key = "pinned_section",
+                            span = StaggeredGridItemSpan.FullLine
+                        ) {
+                            PinnedNotesSection(
+                                hasPinnedNotes = hasPinnedNotes,
+                                pinnedNotes = pinnedNotes.item,
+                                onNoteClick = { noteId -> navController.navigate(NoteScreen(noteId)) },
+                                onEditClick = { noteId -> navController.navigate(NoteScreen(noteId)) },
+                                onDeleteClick = { noteId -> viewModel.deleteNote(noteId) },
+                                onPinClick = { note -> viewModel.togglePinNote(note) }
+                            )
+                        }
+                        groupedNotes.item.forEach { listItem ->
+                            when (listItem) {
+                                is NoteListItem.MonthHeader -> {
+                                    item(
+                                        key = "header_${listItem.key}",
+                                        span = StaggeredGridItemSpan.FullLine
+                                    ) {
+                                        Header(listItem.month)
                                     }
-                                    is NoteListItem.NoteItem -> {
-                                        item(
-                                            key = "note_${listItem.note.id}",
-                                            span = if (listItem.note.text.length> 100) {
-                                                StaggeredGridItemSpan.FullLine
-                                            } else {
-                                                StaggeredGridItemSpan.SingleLane
-                                            }
-                                        ) {
-                                            NoteItem(
-                                                note = listItem.note,
-                                                onNoteClick = { navController.navigate(NoteScreen(listItem.note.id)) },
-                                                onEditClick = { navController.navigate(NoteScreen(listItem.note.id)) },
-                                                onDeleteClick = { viewModel.deleteNote(listItem.note.id) },
-                                                onPinClick = { viewModel.togglePinNote(listItem.note)}
-
-                                            )
+                                }
+                                is NoteListItem.NoteItem -> {
+                                    item(
+                                        key = "note_${listItem.note.id}",
+                                        span = if (listItem.note.text.length> 100) {
+                                            StaggeredGridItemSpan.FullLine
+                                        } else {
+                                            StaggeredGridItemSpan.SingleLane
                                         }
+                                    ) {
+                                        NoteItem(
+                                            note = listItem.note,
+                                            onNoteClick = { navController.navigate(NoteScreen(listItem.note.id)) },
+                                            onEditClick = { navController.navigate(NoteScreen(listItem.note.id)) },
+                                            onDeleteClick = { viewModel.deleteNote(listItem.note.id) },
+                                            onPinClick = { viewModel.togglePinNote(listItem.note)}
+
+                                        )
                                     }
                                 }
                             }
-                            item(span = StaggeredGridItemSpan.FullLine) { Spacer(Modifier.height(100.dp)) }
                         }
-                    )
-                }
+                        item(span = StaggeredGridItemSpan.FullLine) { Spacer(Modifier.height(100.dp)) }
+                    }
+                )
+
+
             }
         }
     }

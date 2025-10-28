@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,8 +46,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kiryha.noting.R
 import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.presentation.components.NotingTopAppBar
@@ -71,6 +74,7 @@ fun SharedTransitionScope.NoteScreen(
     var noteText by remember { mutableStateOf("") }
     var isSaving by remember { mutableStateOf(false) }
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    var isPinned by remember { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -80,6 +84,7 @@ fun SharedTransitionScope.NoteScreen(
             viewModel.getNoteById(noteId)
             if (selectedNote.item.id == noteId) {
                 noteText = selectedNote.item.text
+                isPinned = selectedNote.item.isPinned
             }
         }
     }
@@ -115,7 +120,7 @@ fun SharedTransitionScope.NoteScreen(
                     date = selectedNote.item.date.ifEmpty {
                         LocalDateTime.now().format(dateFormatter)
                     },
-                    isPinned = selectedNote.item.isPinned
+                    isPinned = isPinned
 
                 )
             }
@@ -182,7 +187,7 @@ fun SharedTransitionScope.NoteScreen(
                             .focusRequester(focusRequester),
                         textStyle = MaterialTheme.typography.bodyLarge
                     )
-                    HorizontalDivider(color = MaterialTheme.colorScheme.secondary)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.primary)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
@@ -195,10 +200,21 @@ fun SharedTransitionScope.NoteScreen(
                                     viewModel.deleteNote(noteId)
                                 }
                                 navController.popBackStack()
-                            }, imageVector = Icons.Outlined.Delete)
-                        NoteScreenButton(onClick = {}, imageVector = Icons.Outlined.Add)
-                        NoteScreenButton(onClick = {}, imageVector = Icons.Outlined.Add)
-                        NoteScreenButton(onClick = onExit, imageVector = Icons.Outlined.Done)
+                            },
+                            iconRes = R.drawable.trash,
+                        )
+                        NoteScreenButton(
+                            onClick = {},
+                            iconRes = R.drawable.send,
+                        )
+                        NoteScreenButton(
+                            onClick = {isPinned = !isPinned},
+                            iconRes = if (isPinned)R.drawable.filled_bookmark else R.drawable.bookmark,
+                        )
+                        NoteScreenButton(
+                            onClick = onExit,
+                            iconRes = R.drawable.save,
+                        )
 
                     }
                 }
@@ -209,16 +225,19 @@ fun SharedTransitionScope.NoteScreen(
 
 @Composable
 fun NoteScreenButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    imageVector: ImageVector
+    iconRes: Int,
 ) {
     IconButton(
         onClick = onClick,
+        modifier = modifier
     ) {
         Icon(
-            imageVector = imageVector,
-            tint = MaterialTheme.colorScheme.secondary,
-            contentDescription = null
+            painter = painterResource(iconRes),
+            tint = MaterialTheme.colorScheme.primary,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
         )
     }
 }
