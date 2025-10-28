@@ -22,7 +22,7 @@ fun getTypography(): Typography{
             fontFamily = FontFamily.Default,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
-            lineHeight = 20.sp,
+            lineHeight = 18.sp,
             letterSpacing = 0.5.sp
         ),
         bodySmall = TextStyle(

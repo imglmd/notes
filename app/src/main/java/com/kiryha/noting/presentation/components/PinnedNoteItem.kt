@@ -72,9 +72,9 @@ fun PinnedNoteItem(
                         pressOffset = DpOffset(it.x.toDp(), it.y.toDp())
                     }
                 )
-            }.widthIn(max = 140.dp).heightIn(max = 160.dp),
+            }.widthIn(max = 140.dp).heightIn(max = 140.dp),
     ) {
-        Column(Modifier.fillMaxHeight().padding(6.dp)) {
+        Column(Modifier.fillMaxHeight().padding(top = 6.dp, bottom = 4.dp).padding(horizontal = 9.dp)) {
             Text(
                 modifier = Modifier.weight(1f).bottomFade(),
                 text = note.text,
