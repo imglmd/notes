@@ -1,13 +1,13 @@
 package com.kiryha.noting.data
 
 import android.content.Context
-import android.util.Log
 import com.kiryha.noting.data.source.local.DeletedNote
 import com.kiryha.noting.data.source.local.DeletedNoteDao
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.domain.status.ResultWithStatus
 import com.kiryha.noting.data.source.local.NoteDao
 import com.kiryha.noting.data.source.network.NetworkDataSource
+import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.utils.NetworkChecker
 import kotlinx.coroutines.Dispatchers
@@ -15,42 +15,43 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 import kotlin.math.absoluteValue
 
-class NoteRepository(
+class NoteRepositoryImpl(
     private val noteDao: NoteDao,
     private val deletedNoteDao: DeletedNoteDao,
     private val networkSource: NetworkDataSource,
     private val authRepository: AuthRepository,
     private val context: Context
-) : ActionWithNoteImpl {
+): NoteRepository {
 
     private val networkChecker = NetworkChecker(context)
+    override suspend fun upsertNote(note: Note): ResultWithStatus<List<Note>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val userId = authRepository.getCurrentUserId()
 
-    override suspend fun upsertNote(note: Note): ResultWithStatus<List<Note>> = withContext(Dispatchers.IO) {
-        try {
-            val userId = authRepository.getCurrentUserId()
+                val noteWithId = if (note.id == 0) {
+                    note.copy(id = UUID.randomUUID().hashCode().absoluteValue)
+                } else {
+                    note
+                }
 
-            val noteWithId = if (note.id == 0) {
-                note.copy(id = UUID.randomUUID().hashCode().absoluteValue)
-            } else {
-                note
-            }
+                noteDao.upsertNote(noteWithId.toLocal(userId).copy(isSynced = false))
 
-            noteDao.upsertNote(noteWithId.toLocal(userId).copy(isSynced = false))
-
-            if (networkChecker.isOnline() && userId != null) {
-                try {
-                    networkSource.upsertNote(noteWithId.toNetwork(userId))
-                    noteDao.upsertNote(noteWithId.toLocal(userId).copy(isSynced = true))
-                    syncPendingNotes()
-                    ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Success)
-                } catch (e: Exception) {
+                if (networkChecker.isOnline() && userId != null) {
+                    try {
+                        networkSource.upsertNote(noteWithId.toNetwork(userId))
+                        noteDao.upsertNote(noteWithId.toLocal(userId).copy(isSynced = true))
+                        syncPendingNotes()
+                        ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Success)
+                    } catch (e: Exception) {
+                        ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Success)
+                    }
+                } else {
                     ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Success)
                 }
-            } else {
-                ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Success)
+            } catch (e: Exception) {
+                ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Failure())
             }
-        } catch (e: Exception) {
-            ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Failure)
         }
     }
 
@@ -73,7 +74,7 @@ class NoteRepository(
                 ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Deleted)
             }
         } catch (e: Exception) {
-            ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Failure)
+            ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Failure())
         }
     }
 
@@ -88,13 +89,13 @@ class NoteRepository(
                     syncPendingDeletions()
                     ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Success)
                 } catch (e: Exception) {
-                    ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Failure)
+                    ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Failure())
                 }
             } else {
                 ResultWithStatus(noteDao.getNotes().toExternal(), NoteStatus.Success)
             }
         } catch (e: Exception) {
-            ResultWithStatus(emptyList(), NoteStatus.Failure)
+            ResultWithStatus(emptyList(), NoteStatus.Failure())
         }
     }
 
@@ -104,10 +105,10 @@ class NoteRepository(
             if (localNote != null) {
                 ResultWithStatus(localNote.toExternal(), NoteStatus.Success)
             } else {
-                ResultWithStatus(Note(id = 0, text = "", date = ""), NoteStatus.Failure)
+                ResultWithStatus(Note(id = 0, text = "", date = ""), NoteStatus.Failure())
             }
         } catch (e: Exception) {
-            ResultWithStatus(Note(id = 0, text = "", date = ""), NoteStatus.Failure)
+            ResultWithStatus(Note(id = 0, text = "", date = ""), NoteStatus.Failure())
         }
     }
 
@@ -152,26 +153,26 @@ class NoteRepository(
         }
     }
 
-    suspend fun fullSync(): Result<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun fullSync(): ResultWithStatus<Unit> = withContext(Dispatchers.IO) {
         try {
             if (!networkChecker.isOnline()) {
-                return@withContext Result.failure(Exception("Нет подключения к интернету"))
+                return@withContext ResultWithStatus(Unit, NoteStatus.Failure("Нет подключения к интернету"))
             }
 
             val userId = authRepository.getCurrentUserId()
-                ?: return@withContext Result.failure(Exception("Пользователь не авторизован"))
+                ?: return@withContext ResultWithStatus(Unit, NoteStatus.Failure("Пользователь не авторизован"))
 
             syncPendingDeletions()
             syncFromNetwork()
             syncPendingNotes()
 
-            Result.success(Unit)
+            ResultWithStatus(Unit, NoteStatus.Success)
         } catch (e: Exception) {
-            Result.failure(e)
+            ResultWithStatus(Unit, NoteStatus.Failure(e.toString()))
         }
     }
 
-    suspend fun clearLocalData() {
+    override suspend fun clearLocalData() {
         try {
             noteDao.clearAll()
             deletedNoteDao.clearAll()

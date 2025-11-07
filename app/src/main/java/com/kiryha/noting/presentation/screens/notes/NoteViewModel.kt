@@ -1,9 +1,8 @@
 package com.kiryha.noting.presentation.screens.notes
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kiryha.noting.data.NoteRepository
+import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
@@ -126,29 +125,29 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
             val result = repository.fullSync()
 
-            result.fold(
-                onSuccess = {
+            when(result.status) {
+                NoteStatus.Success -> {
                     loadNotes()
                     _syncState.value = SyncState.Success
 
-                    // Автоматически сбрасываем состояние через 2 секунды
                     delay(2000)
                     if (_syncState.value is SyncState.Success) {
                         _syncState.value = SyncState.Idle
                     }
-                },
-                onFailure = { error ->
+                }
+                is NoteStatus.Failure -> {
                     _syncState.value = SyncState.Error(
-                        error.message ?: "Ошибка синхронизации"
+                        result.status.message ?: "Ошибка синхронизации"
                     )
 
-                    // Автоматически сбрасываем ошибку через 3 секунды
                     delay(3000)
                     if (_syncState.value is SyncState.Error) {
                         _syncState.value = SyncState.Idle
                     }
                 }
-            )
+                else -> {}
+            }
+
             loadNotes()
         }
     }

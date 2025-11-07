@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kiryha.noting.data.AuthRepository
-import com.kiryha.noting.data.NoteRepository
+import com.kiryha.noting.data.NoteRepositoryImpl
 import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val authRepository: AuthRepository,
-    private val noteRepository: NoteRepository,
+    private val noteRepositoryImpl: NoteRepositoryImpl,
 ): ViewModel() {
     private val validateEmail = ValidateEmail()
     private val validatePassword = ValidatePassword()
@@ -194,7 +194,7 @@ class AuthViewModel(
                     _formState.value = AuthFormState()
 
                     // Синхронизация заметок после входа
-                    noteRepository.fullSync()
+                    noteRepositoryImpl.fullSync()
                 },
                 onFailure = { error ->
                     val errorMessage = error.message ?: "Ошибка входа"
@@ -219,7 +219,7 @@ class AuthViewModel(
 
             result.fold(
                 onSuccess = {
-                    noteRepository.clearLocalData()
+                    noteRepositoryImpl.clearLocalData()
                     _currentUser.value = null
                     _authState.value = AuthState.Unauthenticated
                     _formState.value = AuthFormState()
