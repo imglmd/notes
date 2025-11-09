@@ -1,12 +1,13 @@
 package com.kiryha.noting.di
 
 import androidx.room.Room
-import com.kiryha.noting.data.AuthRepository
+import com.kiryha.noting.data.AuthRepositoryImpl
 import com.kiryha.noting.data.NoteRepositoryImpl
 import com.kiryha.noting.data.source.local.DeletedNoteDao
 import com.kiryha.noting.data.source.local.NoteDao
 import com.kiryha.noting.data.source.local.NoteDatabase
 import com.kiryha.noting.data.source.network.NetworkDataSource
+import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.presentation.screens.auth.AuthViewModel
 import com.kiryha.noting.presentation.screens.notes.NoteViewModel
@@ -42,7 +43,7 @@ val appModule = module {
     single { NetworkDataSource(get()) }
 
     single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), androidContext()) }
-    single { AuthRepository(get())}
+    single<AuthRepository> { AuthRepositoryImpl(get())}
 
     viewModel { NoteViewModel(get()) }
     viewModel { AuthViewModel(get(), get()) }

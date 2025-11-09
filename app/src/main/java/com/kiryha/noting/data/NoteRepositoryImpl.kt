@@ -7,6 +7,7 @@ import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.domain.status.ResultWithStatus
 import com.kiryha.noting.data.source.local.NoteDao
 import com.kiryha.noting.data.source.network.NetworkDataSource
+import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.utils.NetworkChecker

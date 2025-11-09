@@ -1,4 +1,4 @@
-package com.kiryha.noting.presentation.components
+package com.kiryha.noting.presentation.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,8 +33,6 @@ import androidx.navigation.NavController
 import com.kiryha.noting.R
 import com.kiryha.noting.presentation.navigation.LoginScreen
 import com.kiryha.noting.presentation.navigation.RegistrationScreen
-import com.kiryha.noting.presentation.screens.auth.AuthViewModel
-import com.kiryha.noting.presentation.screens.auth.AuthState
 import com.kiryha.noting.utils.NetworkChecker
 
 @Composable

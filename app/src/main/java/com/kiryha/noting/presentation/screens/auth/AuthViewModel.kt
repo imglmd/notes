@@ -3,8 +3,8 @@ package com.kiryha.noting.presentation.screens.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kiryha.noting.data.AuthRepository
-import com.kiryha.noting.data.NoteRepositoryImpl
+import com.kiryha.noting.data.AuthRepositoryImpl
+import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.usecase.ValidateEmail

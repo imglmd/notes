@@ -1,19 +1,19 @@
 package com.kiryha.noting.data
 
 import com.kiryha.noting.data.source.network.NetworkDataSource
+import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.model.User
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
-import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
-class AuthRepository(
+class AuthRepositoryImpl(
     private val networkSource: NetworkDataSource
-) {
+): AuthRepository {
     private val auth = networkSource.auth
 
 
@@ -21,7 +21,7 @@ class AuthRepository(
         status is SessionStatus.Authenticated
     }
 
-    suspend fun signUpWithEmailAndPassword(
+    override suspend fun signUpWithEmailAndPassword(
         email: String,
         password: String,
         username: String
@@ -49,7 +49,7 @@ class AuthRepository(
         }
     }
 
-    suspend fun signInWithEmailAndPassword(
+    override suspend fun signInWithEmailAndPassword(
         email: String,
         password: String
     ): Result<Unit> {
@@ -64,7 +64,7 @@ class AuthRepository(
         }
     }
 
-    suspend fun signOut(): Result<Unit> {
+    override suspend fun signOut(): Result<Unit> {
         return try {
             auth.signOut()
             Result.success(Unit)
@@ -73,21 +73,21 @@ class AuthRepository(
         }
     }
 
-    suspend fun getCurrentUser(): User? {
+    override suspend fun getCurrentUser(): User? {
         return networkSource.getCurrentUser()?.toExternal()
     }
 
-    suspend fun getCurrentUserId(): String? {
+    override suspend fun getCurrentUserId(): String? {
         return auth.currentUserOrNull()?.id
     }
 
 
-    suspend fun isAuthenticated(): Boolean {
+    override suspend fun isAuthenticated(): Boolean {
         val status = auth.sessionStatus.first { it !is SessionStatus.Initializing }
         return status is SessionStatus.Authenticated
     }
 
-    suspend fun refreshSession(): Result<Unit> {
+    override suspend fun refreshSession(): Result<Unit> {
         return try {
             auth.refreshCurrentSession()
             Result.success(Unit)
