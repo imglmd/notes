@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -280,33 +283,7 @@ fun PinnedNotesSection(
     onDeleteClick: (Int) -> Unit,
     onPinClick: (Note) -> Unit
 ) {
-
-    AnimatedVisibility(
-        visible = hasPinnedNotes,
-        enter = slideInVertically(
-            initialOffsetY = { fullHeight -> -fullHeight / 2 },
-            animationSpec = tween(
-                durationMillis = 400,
-                easing = androidx.compose.animation.core.FastOutSlowInEasing
-            )
-        ) + fadeIn(
-            animationSpec = tween(
-                durationMillis = 300,
-                delayMillis = 100
-            )
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { fullHeight -> -fullHeight / 2 },
-            animationSpec = tween(
-                durationMillis = 300,
-                easing = androidx.compose.animation.core.FastOutSlowInEasing
-            )
-        ) + fadeOut(
-            animationSpec = tween(
-                durationMillis = 250
-            )
-        )
-    ) {
+    if (hasPinnedNotes){
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -317,18 +294,20 @@ fun PinnedNotesSection(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(round.dp)),
                 state = rememberLazyListState(),
+                contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
-                pinnedNotes.forEach { noteItem ->
-                    item {
-                        PinnedNoteItem(
-                            note = noteItem,
-                            onNoteClick = { onNoteClick(noteItem.id) },
-                            onEditClick = { onEditClick(noteItem.id)},
-                            onDeleteClick = { onDeleteClick(noteItem.id) },
-                            onPinClick = { onPinClick(noteItem)},
-                            round = round
-                        )
-                    }
+                items(
+                    items = pinnedNotes,
+                    key = { it.id }
+                ) { noteItem ->
+                    PinnedNoteItem(
+                        note = noteItem,
+                        onNoteClick = { onNoteClick(noteItem.id) },
+                        onEditClick = { onEditClick(noteItem.id) },
+                        onDeleteClick = { onDeleteClick(noteItem.id) },
+                        onPinClick = { onPinClick(noteItem) },
+                        round = round
+                    )
                 }
             }
         }

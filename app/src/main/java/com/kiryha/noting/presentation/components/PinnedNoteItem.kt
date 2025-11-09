@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -47,23 +48,20 @@ fun PinnedNoteItem(
     var pressOffset by remember { mutableStateOf(DpOffset.Zero) }
     var itemHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
+    val shape = remember(round) { RoundedCornerShape(round.dp) }
 
     val displayDate = remember(note.date) {
-        try {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date = inputFormat.parse(note.date)
-            val outputFormat = SimpleDateFormat("MM.dd")
-            outputFormat.format(date)
-        } catch (e: Exception) {
-            note.date
-        }
+        formatDate(note.date)
     }
 
     Box(
         modifier = Modifier
             .onSizeChanged { itemHeight = with(density) { it.height.toDp() } }
             .padding(horizontal = 2.dp)
-            .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(round.dp))
+            .widthIn(max = 140.dp)
+            .heightIn(max = 140.dp)
+            .clip(shape)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .pointerInput(true) {
                 detectTapGestures(
                     onTap = { onNoteClick() },
@@ -72,12 +70,19 @@ fun PinnedNoteItem(
                         pressOffset = DpOffset(it.x.toDp(), it.y.toDp())
                     }
                 )
-            }.widthIn(max = 140.dp).heightIn(max = 140.dp),
+            }
     ) {
-        Column(Modifier.fillMaxHeight().padding(top = 6.dp, bottom = 4.dp).padding(horizontal = 9.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 9.dp)
+                .padding(top = 6.dp, bottom = 4.dp)
+        ) {
             Text(
-                modifier = Modifier.weight(1f).bottomFade(),
                 text = note.text,
+                modifier = Modifier
+                    .weight(1f)
+                    .bottomFade(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
@@ -85,9 +90,10 @@ fun PinnedNoteItem(
                 text = displayDate,
                 modifier = Modifier.align(Alignment.End),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.secondary
             )
         }
+
         NoteContextMenu(
             expanded = isContextMenuVisible,
             onDismissRequest = { isContextMenuVisible = false },
@@ -98,24 +104,30 @@ fun PinnedNoteItem(
             onDeleteClick = onDeleteClick
         )
     }
-
 }
 
+private fun formatDate(dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = inputFormat.parse(dateString) ?: return dateString
+        val outputFormat = SimpleDateFormat("MM.dd", Locale.getDefault())
+        outputFormat.format(date)
+    } catch (e: Exception) {
+        dateString
+    }
+}
 
-fun Modifier.bottomFade(fadeHeight: Dp = 24.dp): Modifier = this.then(
-    Modifier
-        .graphicsLayer() { alpha = 0.99f }
-        .drawWithContent {
-            drawContent()
-            val fadePx = fadeHeight.toPx()
-            val colors = listOf(Color.Black, Color.Transparent)
-            drawRect(
-                brush = Brush.verticalGradient(
-                    colors = colors,
-                    startY = size.height - fadePx,
-                    endY = size.height
-                ),
-                blendMode = BlendMode.DstIn
-            )
-        }
-)
+fun Modifier.bottomFade(fadeHeight: Dp = 24.dp): Modifier = this
+    .graphicsLayer { alpha = 0.99f }
+    .drawWithContent {
+        drawContent()
+        val fadePx = fadeHeight.toPx()
+        drawRect(
+            brush = Brush.verticalGradient(
+                colors = listOf(Color.Black, Color.Transparent),
+                startY = size.height - fadePx,
+                endY = size.height
+            ),
+            blendMode = BlendMode.DstIn
+        )
+    }
