@@ -34,7 +34,9 @@ import com.kiryha.noting.presentation.components.AuthTextField
 import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.MainScreen
+import com.kiryha.noting.presentation.navigation.NoteScreen
 import com.kiryha.noting.presentation.navigation.RegistrationScreen
+import com.kiryha.noting.presentation.navigation.SettingScreen
 
 @Composable
 fun LoginScreen(
@@ -68,7 +70,7 @@ fun LoginScreen(
                 titleText = "Log in",
                 showBackButton = true,
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigate(SettingScreen)
                     viewModel.resetForm()
                 }
             )
@@ -128,7 +130,10 @@ fun LoginScreen(
                               },
                     buttonText = "Log in",
                     text= "Don't  have an account? Sign up",
-                    onTextClick = { navController.navigate(RegistrationScreen) }
+                    onTextClick = {
+                        viewModel.clearError()
+                        navController.navigate(RegistrationScreen)
+                    }
                 )
             }
         }

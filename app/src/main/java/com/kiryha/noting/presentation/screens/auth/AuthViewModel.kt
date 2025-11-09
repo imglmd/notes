@@ -241,9 +241,11 @@ class AuthViewModel(
 
 
     fun clearError() {
-        if (_authState.value is AuthState.Error) {
-            checkAuthStatus()
-        }
+        _formState.value = _formState.value.copy(
+            emailError = null,
+            passwordError = null,
+            usernameError = null,
+        )
     }
 
     fun resetForm() {

@@ -33,6 +33,7 @@ import com.kiryha.noting.presentation.components.HorizontalButton
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.navigation.LoginScreen
 import com.kiryha.noting.presentation.navigation.MainScreen
+import com.kiryha.noting.presentation.navigation.SettingScreen
 
 @Composable
 fun RegistrationScreen(
@@ -84,7 +85,7 @@ fun RegistrationScreen(
                 titleText = "Sign In",
                 showBackButton = true,
                 onBackClick = {
-                    navController.popBackStack()
+                    navController.navigate(SettingScreen)
                     viewModel.resetForm()
                 }
             )
@@ -150,6 +151,7 @@ fun RegistrationScreen(
                     text = "Already have an account? Log in",
                     onTextClick = {
                         navController.navigate(LoginScreen) {
+                            viewModel.clearError()
                             popUpTo(LoginScreen) { inclusive = true }
                         }
                     },

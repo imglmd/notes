@@ -27,6 +27,8 @@ import androidx.navigation.NavController
 import com.kiryha.noting.presentation.components.NotingTopAppBar
 import com.kiryha.noting.presentation.screens.auth.ProfileSection
 import com.kiryha.noting.presentation.components.RadioButtonGroup
+import com.kiryha.noting.presentation.navigation.MainScreen
+import com.kiryha.noting.presentation.navigation.SettingScreen
 import com.kiryha.noting.presentation.screens.auth.AuthViewModel
 import com.kiryha.noting.presentation.screens.notes.NoteViewModel
 import com.kiryha.noting.presentation.theme.ThemeMode
@@ -50,12 +52,12 @@ fun SettingScreen(
             NotingTopAppBar(
                 titleText = "",
                 showBackButton = true,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.navigate(MainScreen) }
             )
         },
         modifier = Modifier.swipeToAction(
             direction = SwipeDirection.Right,
-            onSwipe = { navController.popBackStack() }
+            onSwipe = {navController.navigate(MainScreen)}
         )
     ) { innerPadding ->
         Column(
