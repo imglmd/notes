@@ -1,4 +1,4 @@
-package com.kiryha.noting
+package com.kiryha.noting.presentation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 val navController = rememberNavController()
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.Companion.fillMaxSize()) { innerPadding ->
                     SetupNavGraph(
                         navController = navController,
                         noteViewModel = noteViewModel,
