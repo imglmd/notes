@@ -44,6 +44,6 @@ val appModule = module {
     single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get(), androidContext()) }
     single { AuthRepository(get())}
 
-    viewModel { NoteViewModel(get(),) }
+    viewModel { NoteViewModel(get()) }
     viewModel { AuthViewModel(get(), get()) }
 }

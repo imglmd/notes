@@ -109,7 +109,8 @@ fun SharedTransitionScope.NoteScreen(
             val note = if (noteId == null) {
                 Note(
                     text = trimmedText,
-                    date = LocalDateTime.now().format(dateFormatter)
+                    date = LocalDateTime.now().format(dateFormatter),
+                    isPinned = isPinned
                 )
             } else {
                 Note(
