@@ -1,6 +1,6 @@
 package com.kiryha.noting.domain.usecase
 
-import com.kiryha.noting.domain.status.ValidationResult
+import com.kiryha.noting.domain.usecase.ValidationResult
 
 class ValidateUsername {
     fun execute(name: String): ValidationResult{

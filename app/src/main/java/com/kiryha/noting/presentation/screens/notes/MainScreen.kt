@@ -92,8 +92,6 @@ fun SharedTransitionScope.MainScreen(
     val status by viewModel.status.collectAsState()
     val searchText by viewModel.searchText.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     val coroutineScope = rememberCoroutineScope()
     var isRefreshing by remember { mutableStateOf(false) }
@@ -258,7 +256,6 @@ fun SharedTransitionScope.MainScreen(
                                             onEditClick = { navController.navigate(NoteScreen(listItem.note.id)) },
                                             onDeleteClick = { viewModel.deleteNote(listItem.note.id) },
                                             onPinClick = { viewModel.togglePinNote(listItem.note)}
-
                                         )
                                     }
                                 }
