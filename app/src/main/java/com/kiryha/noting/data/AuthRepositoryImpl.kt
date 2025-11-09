@@ -3,6 +3,8 @@ package com.kiryha.noting.data
 import com.kiryha.noting.data.source.network.NetworkDataSource
 import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.model.User
+import com.kiryha.noting.domain.status.AuthStatus
+import com.kiryha.noting.domain.status.ResultWithStatus
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.Flow
@@ -25,15 +27,21 @@ class AuthRepositoryImpl(
         email: String,
         password: String,
         username: String
-    ): Result<Unit> {
+    ): ResultWithStatus<Unit, AuthStatus> {
         return try {
 
             if (networkSource.isUsernameExists(username)) {
-                return Result.failure(Exception("This username is already taken."))
+                return ResultWithStatus(
+                    Unit,
+                    AuthStatus.Failure.UsernameError("This username is already taken.")
+                )
             }
 
             if (networkSource.isEmailExists(email)) {
-                return Result.failure(Exception("This email address is already in use"))
+                return ResultWithStatus(
+                    Unit,
+                    AuthStatus.Failure.EmailError("This email address is already in use")
+                )
             }
 
             auth.signUpWith(Email) {
@@ -43,33 +51,36 @@ class AuthRepositoryImpl(
                     put("username", JsonPrimitive(username))
                 }
             }
-            Result.success(Unit)
+            ResultWithStatus(Unit, AuthStatus.Success)
         } catch (e: Exception) {
-            Result.failure(Exception("Registration error, try changing your username and/or email address"))
+            return ResultWithStatus(
+                Unit,
+                AuthStatus.Failure.GeneralError("Registration error, try changing your username and/or email address")
+            )
         }
     }
 
     override suspend fun signInWithEmailAndPassword(
         email: String,
         password: String
-    ): Result<Unit> {
+    ): ResultWithStatus<Unit, AuthStatus> {
         return try {
             auth.signInWith(Email) {
                 this.email = email
                 this.password = password
             }
-            Result.success(Unit)
+            ResultWithStatus(Unit, AuthStatus.Success)
         } catch (e: Exception) {
-            Result.failure(Exception("Incorrect email or password"))
+            ResultWithStatus(Unit, AuthStatus.Failure.GeneralError("Incorrect email or password"))
         }
     }
 
-    override suspend fun signOut(): Result<Unit> {
+    override suspend fun signOut(): ResultWithStatus<Unit, AuthStatus> {
         return try {
             auth.signOut()
-            Result.success(Unit)
+            ResultWithStatus(Unit, AuthStatus.Success)
         } catch (e: Exception) {
-            Result.failure(e)
+            ResultWithStatus(Unit, AuthStatus.Failure.GeneralError(e.toString()))
         }
     }
 
@@ -87,12 +98,12 @@ class AuthRepositoryImpl(
         return status is SessionStatus.Authenticated
     }
 
-    override suspend fun refreshSession(): Result<Unit> {
+    override suspend fun refreshSession(): ResultWithStatus<Unit, AuthStatus> {
         return try {
             auth.refreshCurrentSession()
-            Result.success(Unit)
+            ResultWithStatus(Unit, AuthStatus.Success)
         } catch (e: Exception) {
-            Result.failure(e)
+            ResultWithStatus(Unit, AuthStatus.Failure.GeneralError(e.toString()))
         }
     }
 }

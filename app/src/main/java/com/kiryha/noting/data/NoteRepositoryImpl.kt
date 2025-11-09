@@ -25,7 +25,7 @@ class NoteRepositoryImpl(
 ): NoteRepository {
 
     private val networkChecker = NetworkChecker(context)
-    override suspend fun upsertNote(note: Note): ResultWithStatus<List<Note>> {
+    override suspend fun upsertNote(note: Note): ResultWithStatus<List<Note>, NoteStatus> {
         return withContext(Dispatchers.IO) {
             try {
                 val userId = authRepository.getCurrentUserId()
@@ -56,7 +56,7 @@ class NoteRepositoryImpl(
         }
     }
 
-    override suspend fun deleteNote(id: Int): ResultWithStatus<List<Note>> = withContext(Dispatchers.IO) {
+    override suspend fun deleteNote(id: Int): ResultWithStatus<List<Note>, NoteStatus> = withContext(Dispatchers.IO) {
         try {
             val userId = authRepository.getCurrentUserId()
             noteDao.markAsDeleted(id)
@@ -79,7 +79,7 @@ class NoteRepositoryImpl(
         }
     }
 
-    override suspend fun getNotes(): ResultWithStatus<List<Note>> = withContext(Dispatchers.IO) {
+    override suspend fun getNotes(): ResultWithStatus<List<Note>, NoteStatus> = withContext(Dispatchers.IO) {
         try {
             val userId = authRepository.getCurrentUserId()
 
@@ -100,7 +100,7 @@ class NoteRepositoryImpl(
         }
     }
 
-    override suspend fun getNoteById(id: Int): ResultWithStatus<Note> = withContext(Dispatchers.IO) {
+    override suspend fun getNoteById(id: Int): ResultWithStatus<Note, NoteStatus> = withContext(Dispatchers.IO) {
         try {
             val localNote = noteDao.getNoteById(id)
             if (localNote != null) {
@@ -154,7 +154,7 @@ class NoteRepositoryImpl(
         }
     }
 
-    override suspend fun fullSync(): ResultWithStatus<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun fullSync(): ResultWithStatus<Unit, NoteStatus> = withContext(Dispatchers.IO) {
         try {
             if (!networkChecker.isOnline()) {
                 return@withContext ResultWithStatus(Unit, NoteStatus.Failure("Нет подключения к интернету"))

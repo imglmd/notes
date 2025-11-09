@@ -3,10 +3,10 @@ package com.kiryha.noting.presentation.screens.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kiryha.noting.data.AuthRepositoryImpl
 import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.model.User
+import com.kiryha.noting.domain.status.AuthStatus
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
 import com.kiryha.noting.domain.usecase.ValidateUsername
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class AuthViewModel(
     private val authRepository: AuthRepository,
     private val noteRepository: NoteRepository,
-): ViewModel() {
+) : ViewModel() {
     private val validateEmail = ValidateEmail()
     private val validatePassword = ValidatePassword()
     private val validateUsername = ValidateUsername()
@@ -39,52 +39,16 @@ class AuthViewModel(
 
     private fun checkAuthStatus() {
         viewModelScope.launch {
-
             if (_authState.value != AuthState.Initial) {
                 _authState.value = AuthState.Loading
             }
 
             try {
-
                 val isAuth = authRepository.isAuthenticated()
-                Log.d("AuthViewModel", "isAuthenticated (после ожидания): $isAuth")
+                Log.d("AuthViewModel", "isAuthenticated: $isAuth")
 
                 if (isAuth) {
-                    var user: User? = null
-                    var attempts = 0
-                    val maxAttempts = 3
-
-                    while (user == null && attempts < maxAttempts) {
-                        Log.d("AuthViewModel", "Попытка загрузки пользователя: ${attempts + 1}")
-                        user = authRepository.getCurrentUser()
-
-                        if (user == null) {
-                            attempts++
-                            if (attempts < maxAttempts) {
-                                delay(500)
-                            }
-                        }
-                    }
-
-                    if (user != null) {
-                        Log.d("AuthViewModel", "Пользователь загружен: ${user.username}, ${user.email}")
-                        _currentUser.value = user
-                        _authState.value = AuthState.Authenticated
-                    } else {
-                        Log.e("AuthViewModel", "Не удалось загрузить пользователя после $maxAttempts попыток")
-                        val refreshResult = authRepository.refreshSession()
-                        if (refreshResult.isSuccess) {
-                            user = authRepository.getCurrentUser()
-                            if (user != null) {
-                                _currentUser.value = user
-                                _authState.value = AuthState.Authenticated
-                            } else {
-                                _authState.value = AuthState.Unauthenticated
-                            }
-                        } else {
-                            _authState.value = AuthState.Unauthenticated
-                        }
-                    }
+                    loadUserWithRetry()
                 } else {
                     Log.d("AuthViewModel", "Сессия не найдена")
                     _authState.value = AuthState.Unauthenticated
@@ -93,6 +57,48 @@ class AuthViewModel(
                 Log.e("AuthViewModel", "Ошибка при проверке статуса", e)
                 _authState.value = AuthState.Unauthenticated
             }
+        }
+    }
+
+    private suspend fun loadUserWithRetry() {
+        var user: User? = null
+        var attempts = 0
+        val maxAttempts = 3
+
+        while (user == null && attempts < maxAttempts) {
+            Log.d("AuthViewModel", "Попытка загрузки пользователя: ${attempts + 1}")
+            user = authRepository.getCurrentUser()
+
+            if (user == null) {
+                attempts++
+                if (attempts < maxAttempts) {
+                    delay(500)
+                }
+            }
+        }
+
+        if (user != null) {
+            Log.d("AuthViewModel", "Пользователь загружен: ${user.username}, ${user.email}")
+            _currentUser.value = user
+            _authState.value = AuthState.Authenticated
+        } else {
+            Log.e("AuthViewModel", "Не удалось загрузить пользователя после $maxAttempts попыток")
+            tryRefreshSession()
+        }
+    }
+
+    private suspend fun tryRefreshSession() {
+        val refreshResult = authRepository.refreshSession()
+        if (refreshResult.status == AuthStatus.Success) {
+            val user = authRepository.getCurrentUser()
+            if (user != null) {
+                _currentUser.value = user
+                _authState.value = AuthState.Authenticated
+            } else {
+                _authState.value = AuthState.Unauthenticated
+            }
+        } else {
+            _authState.value = AuthState.Unauthenticated
         }
     }
 
@@ -126,42 +132,43 @@ class AuthViewModel(
                 username = _formState.value.username.trim()
             )
 
-            result.fold(
-                onSuccess = {
+            when (val status = result.status) {
+                AuthStatus.Success -> {
                     _currentUser.value = authRepository.getCurrentUser()
                     _authState.value = AuthState.Authenticated
                     _formState.value = AuthFormState()
-                },
-                onFailure = { error ->
-                    val errorMessage = error.message ?: "Ошибка регистрации"
-
-                    // Определяем, к какому полю относится ошибка
-                    _formState.value = when {
-                        errorMessage.contains("Email", ignoreCase = true) -> {
-                            _formState.value.copy(
-                                emailError = errorMessage,
-                                isLoading = false
-                            )
-                        }
-                        errorMessage.contains("имя пользователя", ignoreCase = true) ||
-                                errorMessage.contains("username", ignoreCase = true) -> {
-                            _formState.value.copy(
-                                usernameError = errorMessage,
-                                isLoading = false
-                            )
-                        }
-                        else -> {
-                            _formState.value.copy(
-                                usernameError = " ",
-                                emailError = errorMessage,
-                                passwordError = " ",
-                                isLoading = false
-                            )
-                        }
-                    }
+                }
+                is AuthStatus.Failure.EmailError -> {
+                    _formState.value = _formState.value.copy(
+                        emailError = status.message,
+                        isLoading = false
+                    )
                     _authState.value = AuthState.Unauthenticated
                 }
-            )
+                is AuthStatus.Failure.UsernameError -> {
+                    _formState.value = _formState.value.copy(
+                        usernameError = status.message,
+                        isLoading = false
+                    )
+                    _authState.value = AuthState.Unauthenticated
+                }
+                is AuthStatus.Failure.PasswordError -> {
+                    _formState.value = _formState.value.copy(
+                        passwordError = status.message,
+                        isLoading = false
+                    )
+                    _authState.value = AuthState.Unauthenticated
+                }
+                is AuthStatus.Failure.GeneralError -> {
+                    _formState.value = _formState.value.copy(
+                        emailError = status.message,
+                        passwordError = " ",
+                        usernameError = " ",
+                        isLoading = false
+                    )
+                    _authState.value = AuthState.Unauthenticated
+                }
+            }
         }
     }
 
@@ -188,27 +195,25 @@ class AuthViewModel(
                 password = _formState.value.password
             )
 
-            result.fold(
-                onSuccess = {
+            when (val status = result.status) {
+                AuthStatus.Success -> {
                     _currentUser.value = authRepository.getCurrentUser()
                     _authState.value = AuthState.Authenticated
                     _formState.value = AuthFormState()
 
                     // Синхронизация заметок после входа
                     noteRepository.fullSync()
-                },
-                onFailure = { error ->
-                    val errorMessage = error.message ?: "Ошибка входа"
-
-                    // При ошибке входа показывает ошибку на обоих полях
+                }
+                is AuthStatus.Failure -> {
+                    // При ошибке входа показываем ошибку на обоих полях
                     _formState.value = _formState.value.copy(
-                        emailError = errorMessage,
-                        passwordError = " ", // Пустая строка чтобы подсветить поле
+                        emailError = status.message ?: "Ошибка входа",
+                        passwordError = " ",
                         isLoading = false
                     )
                     _authState.value = AuthState.Unauthenticated
                 }
-            )
+            }
         }
     }
 
@@ -218,40 +223,22 @@ class AuthViewModel(
 
             val result = authRepository.signOut()
 
-            result.fold(
-                onSuccess = {
+            when (result.status) {
+                AuthStatus.Success -> {
                     noteRepository.clearLocalData()
                     _currentUser.value = null
                     _authState.value = AuthState.Unauthenticated
                     _formState.value = AuthFormState()
-                },
-                onFailure = { error ->
+                }
+                is AuthStatus.Failure -> {
                     _authState.value = AuthState.Error(
-                        error.message ?: "Ошибка выхода"
+                        (result.status as AuthStatus.Failure).message ?: "Ошибка выхода"
                     )
                 }
-            )
+            }
         }
     }
 
-    fun refreshSession() {
-        viewModelScope.launch {
-            _authState.value = AuthState.Loading
-
-            val result = authRepository.refreshSession()
-
-            result.fold(
-                onSuccess = {
-                    _currentUser.value = authRepository.getCurrentUser()
-                    _authState.value = AuthState.Authenticated
-                },
-                onFailure = {
-                    _currentUser.value = null
-                    _authState.value = AuthState.Unauthenticated
-                }
-            )
-        }
-    }
 
     fun clearError() {
         if (_authState.value is AuthState.Error) {

@@ -28,18 +28,18 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
     private val _isSearching = MutableStateFlow(false)
     val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
 
-    private val _notes = MutableStateFlow<ResultWithStatus<List<Note>>>(
+    private val _notes = MutableStateFlow<ResultWithStatus<List<Note>, NoteStatus>>(
         ResultWithStatus(
             emptyList(),
             NoteStatus.Success
         )
     )
-    private val _pinnedNotes = MutableStateFlow<ResultWithStatus<List<Note>>>(
+    private val _pinnedNotes = MutableStateFlow<ResultWithStatus<List<Note>, NoteStatus>>(
         ResultWithStatus(emptyList(), NoteStatus.Success)
     )
-    val pinnedNotes: StateFlow<ResultWithStatus<List<Note>>> = _pinnedNotes.asStateFlow()
+    val pinnedNotes: StateFlow<ResultWithStatus<List<Note>, NoteStatus>> = _pinnedNotes.asStateFlow()
 
-    val groupedNotes: StateFlow<ResultWithStatus<List<NoteListItem>>> = searchText.combine(_notes) { text, result ->
+    val groupedNotes: StateFlow<ResultWithStatus<List<NoteListItem>, NoteStatus>> = searchText.combine(_notes) { text, result ->
         val filteredNotes = if (text.isBlank()){
             result.item
         } else {
@@ -59,13 +59,13 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
     private val _status = MutableStateFlow<NoteStatus>(NoteStatus.Success)
     val status: StateFlow<NoteStatus> get() = _status.asStateFlow()
 
-    private val _selectedNote = MutableStateFlow<ResultWithStatus<Note>>(
+    private val _selectedNote = MutableStateFlow<ResultWithStatus<Note, NoteStatus>>(
         ResultWithStatus(
             Note(id = -1, text = "", date = ""),
             NoteStatus.Success
         )
     )
-    val selectedNote: StateFlow<ResultWithStatus<Note>> get() = _selectedNote.asStateFlow()
+    val selectedNote: StateFlow<ResultWithStatus<Note, NoteStatus>> get() = _selectedNote.asStateFlow()
 
     private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)
     val syncState: StateFlow<SyncState> = _syncState.asStateFlow()

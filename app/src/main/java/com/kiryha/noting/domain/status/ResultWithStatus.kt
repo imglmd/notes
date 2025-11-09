@@ -1,6 +1,6 @@
 package com.kiryha.noting.domain.status
 
-data class ResultWithStatus<T> (
+data class ResultWithStatus<T, S>(
     val item: T,
-    val status: NoteStatus
+    val status: S
 )
