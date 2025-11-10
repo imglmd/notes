@@ -4,7 +4,7 @@ import android.util.Patterns
 import com.kiryha.noting.domain.usecase.ValidationResult
 
 class ValidateEmail {
-    fun execute(email: String): ValidationResult {
+    operator fun invoke(email: String): ValidationResult {
         val trimmedEmail = email.trim()
 
         if (trimmedEmail.isBlank()) {

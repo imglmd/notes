@@ -1,9 +1,7 @@
 package com.kiryha.noting.domain.usecase
 
-import com.kiryha.noting.domain.usecase.ValidationResult
-
 class ValidateUsername {
-    fun execute(name: String): ValidationResult{
+    operator fun invoke(name: String): ValidationResult{
 
         val trimmedName = name.trim()
 

@@ -7,6 +7,7 @@ import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.domain.status.ResultWithStatus
+import com.kiryha.noting.domain.usecase.SyncNotesUseCase
 import com.kiryha.noting.presentation.TestData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
+class NoteViewModel(
+    private val repository: NoteRepository,
+    private val syncNotesUseCase: SyncNotesUseCase
+) : ViewModel() {
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
@@ -118,12 +122,12 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
-
     fun syncNotes() {
         viewModelScope.launch {
             _syncState.value = SyncState.Syncing
 
-            val result = repository.fullSync()
+            // Используем UseCase для синхронизации
+            val result = syncNotesUseCase()
 
             when(result.status) {
                 NoteStatus.Success -> {

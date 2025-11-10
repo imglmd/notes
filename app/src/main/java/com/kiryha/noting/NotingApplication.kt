@@ -1,7 +1,7 @@
 package com.kiryha.noting
 
 import android.app.Application
-import com.kiryha.noting.di.appModule
+import com.kiryha.noting.di.appModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -10,7 +10,7 @@ class NotingApplication : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@NotingApplication)
-            modules(appModule)
+            modules(appModules)
         }
     }
 }

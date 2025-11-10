@@ -3,7 +3,7 @@ package com.kiryha.noting.domain.usecase
 import com.kiryha.noting.domain.usecase.ValidationResult
 
 class ValidatePassword {
-    fun execute(password: String): ValidationResult {
+    operator fun invoke(password: String): ValidationResult {
 
         if (password.length < 6) {
             return ValidationResult(

@@ -7,6 +7,7 @@ import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.status.AuthStatus
+import com.kiryha.noting.domain.usecase.SyncNotesUseCase
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
 import com.kiryha.noting.domain.usecase.ValidateUsername
@@ -19,10 +20,12 @@ import kotlinx.coroutines.launch
 class AuthViewModel(
     private val authRepository: AuthRepository,
     private val noteRepository: NoteRepository,
+    private val syncNotesUseCase: SyncNotesUseCase,
+
+    private val validateEmail: ValidateEmail,
+    private val validatePassword: ValidatePassword,
+    private val validateUsername: ValidateUsername
 ) : ViewModel() {
-    private val validateEmail = ValidateEmail()
-    private val validatePassword = ValidatePassword()
-    private val validateUsername = ValidateUsername()
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -103,9 +106,9 @@ class AuthViewModel(
     }
 
     fun signUp() {
-        val emailResult = validateEmail.execute(_formState.value.email)
-        val passwordResult = validatePassword.execute(_formState.value.password)
-        val usernameResult = validateUsername.execute(_formState.value.username)
+        val emailResult = validateEmail(_formState.value.email)
+        val passwordResult = validatePassword(_formState.value.password)
+        val usernameResult = validateUsername(_formState.value.username)
 
         val hasError = listOf(
             emailResult,
@@ -173,8 +176,8 @@ class AuthViewModel(
     }
 
     fun signIn() {
-        val emailResult = validateEmail.execute(_formState.value.email)
-        val passwordResult = validatePassword.execute(_formState.value.password)
+        val emailResult = validateEmail(_formState.value.email)
+        val passwordResult = validatePassword(_formState.value.password)
 
         val hasError = listOf(emailResult, passwordResult).any { !it.successful }
 
@@ -201,11 +204,10 @@ class AuthViewModel(
                     _authState.value = AuthState.Authenticated
                     _formState.value = AuthFormState()
 
-                    // Синхронизация заметок после входа
-                    noteRepository.fullSync()
+                    // Синхронизация заметок через UseCase
+                    syncNotesUseCase()
                 }
                 is AuthStatus.Failure -> {
-                    // При ошибке входа показываем ошибку на обоих полях
                     _formState.value = _formState.value.copy(
                         emailError = status.message ?: "Ошибка входа",
                         passwordError = " ",
@@ -238,7 +240,6 @@ class AuthViewModel(
             }
         }
     }
-
 
     fun clearError() {
         _formState.value = _formState.value.copy(
