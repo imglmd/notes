@@ -106,12 +106,12 @@ val viewModelModule: Module = module {
     viewModel {
         AuthViewModel(
             repository = get(),
-            noteRepository = get(),
             syncNotesUseCase = get(),
             loadUserUseCase = get(),
             validateEmail = get(),
             validatePassword = get(),
             validateUsername = get(),
+            clearLocalDataUseCase = get(),
         )
     }
 
