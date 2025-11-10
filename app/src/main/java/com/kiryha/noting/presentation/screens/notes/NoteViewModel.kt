@@ -126,7 +126,6 @@ class NoteViewModel(
         viewModelScope.launch {
             _syncState.value = SyncState.Syncing
 
-            // Используем UseCase для синхронизации
             val result = syncNotesUseCase()
 
             when(result.status) {

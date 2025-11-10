@@ -234,7 +234,7 @@ class AuthViewModel(
                 }
                 is AuthStatus.Failure -> {
                     _authState.value = AuthState.Error(
-                        (result.status as AuthStatus.Failure).message ?: "Ошибка выхода"
+                        result.status.message ?: "Ошибка выхода"
                     )
                 }
             }
