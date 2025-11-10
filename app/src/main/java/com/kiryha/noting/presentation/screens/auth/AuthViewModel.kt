@@ -4,26 +4,24 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kiryha.noting.domain.AuthRepository
-import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.status.AuthStatus
+import com.kiryha.noting.domain.usecase.ClearLocalDataUseCase
 import com.kiryha.noting.domain.usecase.LoadUserUseCase
 import com.kiryha.noting.domain.usecase.SyncNotesUseCase
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
 import com.kiryha.noting.domain.usecase.ValidateUsername
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val authRepository: AuthRepository,
-    private val noteRepository: NoteRepository,
+    private val repository: AuthRepository,
     private val syncNotesUseCase: SyncNotesUseCase,
     private val loadUserUseCase: LoadUserUseCase,
-
+    private val clearLocalDataUseCase: ClearLocalDataUseCase,
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
     private val validateUsername: ValidateUsername
@@ -49,7 +47,7 @@ class AuthViewModel(
             }
 
             try {
-                val isAuth = authRepository.isAuthenticated()
+                val isAuth = repository.isAuthenticated()
                 Log.d("AuthViewModel", "isAuthenticated: $isAuth")
 
                 if (isAuth) {
@@ -79,9 +77,9 @@ class AuthViewModel(
     }
 
     private suspend fun tryRefreshSession() {
-        val refreshResult = authRepository.refreshSession()
+        val refreshResult = repository.refreshSession()
         if (refreshResult.status == AuthStatus.Success) {
-            val user = authRepository.getCurrentUser()
+            val user = repository.getCurrentUser()
             if (user != null) {
                 _currentUser.value = user
                 _authState.value = AuthState.Authenticated
@@ -117,7 +115,7 @@ class AuthViewModel(
             _formState.value = _formState.value.copy(isLoading = true)
             _authState.value = AuthState.Loading
 
-            val result = authRepository.signUpWithEmailAndPassword(
+            val result = repository.signUpWithEmailAndPassword(
                 email = _formState.value.email.trim(),
                 password = _formState.value.password,
                 username = _formState.value.username.trim()
@@ -125,7 +123,7 @@ class AuthViewModel(
 
             when (val status = result.status) {
                 AuthStatus.Success -> {
-                    _currentUser.value = authRepository.getCurrentUser()
+                    _currentUser.value = repository.getCurrentUser()
                     _authState.value = AuthState.Authenticated
                     _formState.value = AuthFormState()
                 }
@@ -181,18 +179,17 @@ class AuthViewModel(
             _formState.value = _formState.value.copy(isLoading = true)
             _authState.value = AuthState.Loading
 
-            val result = authRepository.signInWithEmailAndPassword(
+            val result = repository.signInWithEmailAndPassword(
                 email = _formState.value.email.trim(),
                 password = _formState.value.password
             )
 
             when (val status = result.status) {
                 AuthStatus.Success -> {
-                    _currentUser.value = authRepository.getCurrentUser()
+                    _currentUser.value = repository.getCurrentUser()
                     _authState.value = AuthState.Authenticated
                     _formState.value = AuthFormState()
 
-                    // Синхронизация заметок через UseCase
                     syncNotesUseCase()
                 }
                 is AuthStatus.Failure -> {
@@ -211,11 +208,11 @@ class AuthViewModel(
         viewModelScope.launch {
             _authState.value = AuthState.Loading
 
-            val result = authRepository.signOut()
+            val result = repository.signOut()
 
             when (result.status) {
                 AuthStatus.Success -> {
-                    noteRepository.clearLocalData()
+                    clearLocalDataUseCase()
                     _currentUser.value = null
                     _authState.value = AuthState.Unauthenticated
                     _formState.value = AuthFormState()
