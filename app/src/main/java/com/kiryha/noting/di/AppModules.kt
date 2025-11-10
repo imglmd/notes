@@ -9,6 +9,7 @@ import com.kiryha.noting.data.source.local.NoteDatabase
 import com.kiryha.noting.data.source.network.NetworkDataSource
 import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.NoteRepository
+import com.kiryha.noting.domain.usecase.LoadUserUseCase
 import com.kiryha.noting.domain.usecase.SyncNotesUseCase
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
@@ -82,6 +83,12 @@ val useCaseModule: Module = module {
     factory { ValidateUsername() }
 
     factory {
+        LoadUserUseCase(
+            repository = get()
+        )
+    }
+
+    factory {
         SyncNotesUseCase(
             noteRepository = get()
         )
@@ -94,6 +101,7 @@ val viewModelModule: Module = module {
             authRepository = get(),
             noteRepository = get(),
             syncNotesUseCase = get(),
+            loadUserUseCase = get(),
             validateEmail = get(),
             validatePassword = get(),
             validateUsername = get(),

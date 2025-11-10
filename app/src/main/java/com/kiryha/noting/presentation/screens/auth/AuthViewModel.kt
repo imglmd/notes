@@ -7,6 +7,7 @@ import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.status.AuthStatus
+import com.kiryha.noting.domain.usecase.LoadUserUseCase
 import com.kiryha.noting.domain.usecase.SyncNotesUseCase
 import com.kiryha.noting.domain.usecase.ValidateEmail
 import com.kiryha.noting.domain.usecase.ValidatePassword
@@ -21,6 +22,7 @@ class AuthViewModel(
     private val authRepository: AuthRepository,
     private val noteRepository: NoteRepository,
     private val syncNotesUseCase: SyncNotesUseCase,
+    private val loadUserUseCase: LoadUserUseCase,
 
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
@@ -64,29 +66,15 @@ class AuthViewModel(
     }
 
     private suspend fun loadUserWithRetry() {
-        var user: User? = null
-        var attempts = 0
-        val maxAttempts = 3
-
-        while (user == null && attempts < maxAttempts) {
-            Log.d("AuthViewModel", "Попытка загрузки пользователя: ${attempts + 1}")
-            user = authRepository.getCurrentUser()
-
-            if (user == null) {
-                attempts++
-                if (attempts < maxAttempts) {
-                    delay(500)
-                }
+        val result = loadUserUseCase()
+        when(result.status){
+            AuthStatus.Success -> {
+                _currentUser.value = result.item
+                _authState.value = AuthState.Authenticated
             }
-        }
-
-        if (user != null) {
-            Log.d("AuthViewModel", "Пользователь загружен: ${user.username}, ${user.email}")
-            _currentUser.value = user
-            _authState.value = AuthState.Authenticated
-        } else {
-            Log.e("AuthViewModel", "Не удалось загрузить пользователя после $maxAttempts попыток")
-            tryRefreshSession()
+            else -> {
+                tryRefreshSession()
+            }
         }
     }
 
