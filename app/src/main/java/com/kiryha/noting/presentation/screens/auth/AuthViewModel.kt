@@ -1,20 +1,13 @@
 package com.kiryha.noting.presentation.screens.auth
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.status.AuthStatus
-import com.kiryha.noting.domain.usecase.ClearLocalDataUseCase
-import com.kiryha.noting.domain.usecase.LoadUserUseCase
-import com.kiryha.noting.domain.usecase.SyncNotesUseCase
-import com.kiryha.noting.domain.usecase.ValidateEmail
-import com.kiryha.noting.domain.usecase.ValidatePassword
-import com.kiryha.noting.domain.usecase.ValidateUsername
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.kiryha.noting.domain.usecase.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
@@ -42,186 +35,161 @@ class AuthViewModel(
 
     private fun checkAuthStatus() {
         viewModelScope.launch {
-            if (_authState.value != AuthState.Initial) {
-                _authState.value = AuthState.Loading
-            }
-
             try {
+                if (_authState.value != AuthState.Initial) {
+                    _authState.value = AuthState.Loading
+                }
+
                 val isAuth = repository.isAuthenticated()
-                Log.d("AuthViewModel", "isAuthenticated: $isAuth")
 
                 if (isAuth) {
                     loadUserWithRetry()
                 } else {
-                    Log.d("AuthViewModel", "Сессия не найдена")
                     _authState.value = AuthState.Unauthenticated
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "Ошибка при проверке статуса", e)
-                _authState.value = AuthState.Unauthenticated
+                _authState.value = AuthState.Error(
+                    message = "Не удалось проверить статус авторизации"
+                )
             }
         }
     }
 
     private suspend fun loadUserWithRetry() {
-        val result = loadUserUseCase()
-        when(result.status){
-            AuthStatus.Success -> {
-                _currentUser.value = result.item
-                _authState.value = AuthState.Authenticated
+        try {
+            val result = loadUserUseCase()
+            when (result.status) {
+                AuthStatus.Success -> {
+                    _currentUser.value = result.item
+                    _authState.value = AuthState.Authenticated
+                }
+                is AuthStatus.Failure -> {
+                    tryRefreshSession()
+                }
             }
-            else -> {
-                tryRefreshSession()
-            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            tryRefreshSession()
         }
     }
 
     private suspend fun tryRefreshSession() {
-        val refreshResult = repository.refreshSession()
-        if (refreshResult.status == AuthStatus.Success) {
-            val user = repository.getCurrentUser()
-            if (user != null) {
-                _currentUser.value = user
-                _authState.value = AuthState.Authenticated
-            } else {
-                _authState.value = AuthState.Unauthenticated
+        try {
+            val refreshResult = repository.refreshSession()
+            when (refreshResult.status) {
+                AuthStatus.Success -> {
+                    val user = repository.getCurrentUser()
+                    if (user != null) {
+                        _currentUser.value = user
+                        _authState.value = AuthState.Authenticated
+                    } else {
+                        _authState.value = AuthState.Unauthenticated
+                    }
+                }
+                is AuthStatus.Failure -> {
+                    _authState.value = AuthState.Unauthenticated
+                }
             }
-        } else {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
             _authState.value = AuthState.Unauthenticated
         }
     }
 
     fun signUp() {
-        val emailResult = validateEmail(_formState.value.email)
-        val passwordResult = validatePassword(_formState.value.password)
-        val usernameResult = validateUsername(_formState.value.username)
-
-        val hasError = listOf(
-            emailResult,
-            passwordResult,
-            usernameResult
-        ).any { !it.successful }
-
-        if (hasError) {
-            _formState.value = _formState.value.copy(
-                emailError = emailResult.errorMessage,
-                passwordError = passwordResult.errorMessage,
-                usernameError = usernameResult.errorMessage
-            )
+        val validationErrors = validateSignUpForm()
+        if (validationErrors != null) {
+            _formState.value = validationErrors
             return
         }
 
         viewModelScope.launch {
-            _formState.value = _formState.value.copy(isLoading = true)
-            _authState.value = AuthState.Loading
+            try {
+                _formState.value = _formState.value.copy(isLoading = true)
+                _authState.value = AuthState.Loading
 
-            val result = repository.signUpWithEmailAndPassword(
-                email = _formState.value.email.trim(),
-                password = _formState.value.password,
-                username = _formState.value.username.trim()
-            )
+                val result = repository.signUpWithEmailAndPassword(
+                    email = _formState.value.email.trim(),
+                    password = _formState.value.password,
+                    username = _formState.value.username.trim()
+                )
 
-            when (val status = result.status) {
-                AuthStatus.Success -> {
-                    _currentUser.value = repository.getCurrentUser()
-                    _authState.value = AuthState.Authenticated
-                    _formState.value = AuthFormState()
-                }
-                is AuthStatus.Failure.EmailError -> {
-                    _formState.value = _formState.value.copy(
-                        emailError = status.message,
-                        isLoading = false
-                    )
-                    _authState.value = AuthState.Unauthenticated
-                }
-                is AuthStatus.Failure.UsernameError -> {
-                    _formState.value = _formState.value.copy(
-                        usernameError = status.message,
-                        isLoading = false
-                    )
-                    _authState.value = AuthState.Unauthenticated
-                }
-                is AuthStatus.Failure.PasswordError -> {
-                    _formState.value = _formState.value.copy(
-                        passwordError = status.message,
-                        isLoading = false
-                    )
-                    _authState.value = AuthState.Unauthenticated
-                }
-                is AuthStatus.Failure.GeneralError -> {
-                    _formState.value = _formState.value.copy(
-                        emailError = status.message,
-                        passwordError = " ",
-                        usernameError = " ",
-                        isLoading = false
-                    )
-                    _authState.value = AuthState.Unauthenticated
-                }
+                handleAuthResult(result.status, isSignUp = true)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                handleUnexpectedError("Не удалось зарегистрироваться")
             }
         }
     }
 
     fun signIn() {
-        val emailResult = validateEmail(_formState.value.email)
-        val passwordResult = validatePassword(_formState.value.password)
-
-        val hasError = listOf(emailResult, passwordResult).any { !it.successful }
-
-        if (hasError) {
-            _formState.value = _formState.value.copy(
-                emailError = emailResult.errorMessage,
-                passwordError = passwordResult.errorMessage
-            )
+        val validationErrors = validateSignInForm()
+        if (validationErrors != null) {
+            _formState.value = validationErrors
             return
         }
 
         viewModelScope.launch {
-            _formState.value = _formState.value.copy(isLoading = true)
-            _authState.value = AuthState.Loading
+            try {
+                _formState.value = _formState.value.copy(isLoading = true)
+                _authState.value = AuthState.Loading
 
-            val result = repository.signInWithEmailAndPassword(
-                email = _formState.value.email.trim(),
-                password = _formState.value.password
-            )
+                val result = repository.signInWithEmailAndPassword(
+                    email = _formState.value.email.trim(),
+                    password = _formState.value.password
+                )
 
-            when (val status = result.status) {
-                AuthStatus.Success -> {
-                    _currentUser.value = repository.getCurrentUser()
-                    _authState.value = AuthState.Authenticated
-                    _formState.value = AuthFormState()
+                when (result.status) {
+                    AuthStatus.Success -> {
+                        _currentUser.value = repository.getCurrentUser()
+                        _authState.value = AuthState.Authenticated
+                        _formState.value = AuthFormState()
 
-                    syncNotesUseCase()
+                        launch {
+                            syncNotesUseCase()
+                        }
+                    }
+                    is AuthStatus.Failure -> {
+                        handleAuthFailure(result.status)
+                    }
                 }
-                is AuthStatus.Failure -> {
-                    _formState.value = _formState.value.copy(
-                        emailError = status.message ?: "Ошибка входа",
-                        passwordError = " ",
-                        isLoading = false
-                    )
-                    _authState.value = AuthState.Unauthenticated
-                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                handleUnexpectedError("Не удалось войти")
             }
         }
     }
 
     fun signOut() {
         viewModelScope.launch {
-            _authState.value = AuthState.Loading
+            try {
+                _authState.value = AuthState.Loading
 
-            val result = repository.signOut()
+                val result = repository.signOut()
 
-            when (result.status) {
-                AuthStatus.Success -> {
-                    clearLocalDataUseCase()
-                    _currentUser.value = null
-                    _authState.value = AuthState.Unauthenticated
-                    _formState.value = AuthFormState()
+                when (result.status) {
+                    AuthStatus.Success -> {
+                        clearLocalDataUseCase()
+                        _currentUser.value = null
+                        _authState.value = AuthState.Unauthenticated
+                        _formState.value = AuthFormState()
+                    }
+                    is AuthStatus.Failure -> {
+                        _authState.value = AuthState.Error(
+                            result.status.message ?: "Ошибка выхода"
+                        )
+                    }
                 }
-                is AuthStatus.Failure -> {
-                    _authState.value = AuthState.Error(
-                        result.status.message ?: "Ошибка выхода"
-                    )
-                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Не удалось выйти из аккаунта")
             }
         }
     }
@@ -232,6 +200,10 @@ class AuthViewModel(
             passwordError = null,
             usernameError = null,
         )
+
+        if (_authState.value is AuthState.Error) {
+            _authState.value = AuthState.Unauthenticated
+        }
     }
 
     fun resetForm() {
@@ -257,5 +229,98 @@ class AuthViewModel(
             username = username,
             usernameError = null
         )
+    }
+
+
+    private fun validateSignUpForm(): AuthFormState? {
+        val emailResult = validateEmail(_formState.value.email)
+        val passwordResult = validatePassword(_formState.value.password)
+        val usernameResult = validateUsername(_formState.value.username)
+
+        val hasError = listOf(
+            emailResult,
+            passwordResult,
+            usernameResult
+        ).any { !it.successful }
+
+        return if (hasError) {
+            _formState.value.copy(
+                emailError = emailResult.errorMessage,
+                passwordError = passwordResult.errorMessage,
+                usernameError = usernameResult.errorMessage
+            )
+        } else null
+    }
+
+    private fun validateSignInForm(): AuthFormState? {
+        val emailResult = validateEmail(_formState.value.email)
+        val passwordResult = validatePassword(_formState.value.password)
+
+        val hasError = listOf(emailResult, passwordResult).any { !it.successful }
+
+        return if (hasError) {
+            _formState.value.copy(
+                emailError = emailResult.errorMessage,
+                passwordError = passwordResult.errorMessage
+            )
+        } else null
+    }
+
+    private suspend fun handleAuthResult(status: AuthStatus, isSignUp: Boolean) {
+        when (status) {
+            AuthStatus.Success -> {
+                _currentUser.value = repository.getCurrentUser()
+                _authState.value = AuthState.Authenticated
+                _formState.value = AuthFormState()
+            }
+            is AuthStatus.Failure -> {
+                handleAuthFailure(status)
+            }
+        }
+    }
+
+    private fun handleAuthFailure(failure: AuthStatus.Failure) {
+        val defaultMessage = "Произошла ошибка"
+
+        _formState.value = when (failure) {
+            is AuthStatus.Failure.EmailError -> {
+                _formState.value.copy(
+                    emailError = failure.message ?: defaultMessage,
+                    isLoading = false
+                )
+            }
+            is AuthStatus.Failure.UsernameError -> {
+                _formState.value.copy(
+                    usernameError = failure.message ?: defaultMessage,
+                    isLoading = false
+                )
+            }
+            is AuthStatus.Failure.PasswordError -> {
+                _formState.value.copy(
+                    passwordError = failure.message ?: defaultMessage,
+                    isLoading = false
+                )
+            }
+            is AuthStatus.Failure.GeneralError -> {
+                _formState.value.copy(
+                    emailError = failure.message ?: defaultMessage,
+                    passwordError = " ",
+                    usernameError = " ",
+                    isLoading = false
+                )
+            }
+        }
+
+        _authState.value = AuthState.Unauthenticated
+    }
+
+    private fun handleUnexpectedError(message: String) {
+        _formState.value = _formState.value.copy(
+            emailError = message,
+            passwordError = " ",
+            usernameError = " ",
+            isLoading = false
+        )
+        _authState.value = AuthState.Error(message)
     }
 }
