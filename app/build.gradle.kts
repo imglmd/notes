@@ -70,11 +70,8 @@ dependencies {
 
     implementation("io.ktor:ktor-client-android:3.3.0")
 
-    implementation(project.dependencies.platform("io.insert-koin:koin-bom:4.1.0"))
-    implementation("io.insert-koin:koin-core")
     implementation("io.insert-koin:koin-android:4.1.0")
-    implementation("io.insert-koin:koin-compose:4.1.0")
-    implementation("io.insert-koin:koin-compose-viewmodel:4.1.0")
 
+    implementation(libs.androidx.compose.animation)
     implementation("androidx.core:core-splashscreen:1.0.1")
 }

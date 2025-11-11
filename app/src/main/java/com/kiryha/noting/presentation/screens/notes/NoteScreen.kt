@@ -139,7 +139,7 @@ fun SharedTransitionScope.NoteScreen(
             )
         },
         modifier = Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState(key = EXPLODE_BOUNDS_KEY),
+            sharedContentState = rememberSharedContentState(key = noteId ?: EXPLODE_BOUNDS_KEY),
             animatedVisibilityScope = animatedVisibilityScope
         ),
         contentWindowInsets = WindowInsets()

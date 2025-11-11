@@ -255,7 +255,8 @@ fun SharedTransitionScope.MainScreen(
                                             onNoteClick = { navController.navigate(NoteScreen(listItem.note.id)) },
                                             onEditClick = { navController.navigate(NoteScreen(listItem.note.id)) },
                                             onDeleteClick = { viewModel.deleteNote(listItem.note.id) },
-                                            onPinClick = { viewModel.togglePinNote(listItem.note)}
+                                            onPinClick = { viewModel.togglePinNote(listItem.note)},
+                                            animatedVisibilityScope = animatedVisibilityScope
                                         )
                                     }
                                 }

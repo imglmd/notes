@@ -55,32 +55,7 @@ fun SetupNavGraph(
             navController = navController,
             startDestination = MainScreen,
         ) {
-            composable<MainScreen>(
-                /*enterTransition = {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(300)
-                    ) + fadeIn(animationSpec = tween(300))
-                },
-                exitTransition = {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(300)
-                    ) + fadeOut(animationSpec = tween(300))
-                },
-                popEnterTransition = {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(300)
-                    ) + fadeIn(animationSpec = tween(300))
-                },
-                popExitTransition = {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(300)
-                    ) + fadeOut(animationSpec = tween(300))
-                }*/
-            ) {
+            composable<MainScreen>{
                 MainScreen(
                     navController = navController,
                     viewModel = noteViewModel,
@@ -88,32 +63,7 @@ fun SetupNavGraph(
                 )
             }
 
-            composable<NoteScreen>(
-                /*enterTransition = {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(300)
-                    ) + fadeIn(animationSpec = tween(300))
-                },
-                exitTransition = {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(300)
-                    ) + fadeOut(animationSpec = tween(300))
-                },
-                popEnterTransition = {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(300)
-                    ) + fadeIn(animationSpec = tween(300))
-                },
-                popExitTransition = {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(300)
-                    ) + fadeOut(animationSpec = tween(300))
-                }*/
-            ) {
+            composable<NoteScreen>{
                 val args = it.toRoute<NoteScreen>()
                 NoteScreen(
                     navController = navController,

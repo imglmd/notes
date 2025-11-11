@@ -1,6 +1,10 @@
 package com.kiryha.noting.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -40,13 +44,15 @@ import com.kiryha.noting.domain.model.Note
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun NoteItem(
+fun SharedTransitionScope.NoteItem(
     note: Note,
     onNoteClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onPinClick: () -> Unit
+    onPinClick: () -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     var isContextMenuVisible by rememberSaveable { mutableStateOf(false) }
     var pressOffset by remember { mutableStateOf(DpOffset.Zero) }
@@ -67,6 +73,11 @@ fun NoteItem(
     Box(
         modifier = Modifier
             .onSizeChanged { itemHeight = with(density) { it.height.toDp() } }
+            .sharedBounds(
+                sharedContentState = rememberSharedContentState(key = note.id),
+                animatedVisibilityScope = animatedVisibilityScope,
+
+            )
             .background(
                 MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(16.dp)
