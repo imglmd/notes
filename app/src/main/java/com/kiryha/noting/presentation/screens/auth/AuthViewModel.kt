@@ -195,11 +195,11 @@ class AuthViewModel(
     }
 
     fun clearError() {
-        _formState.value = _formState.value.copy(
+        _formState.update { it.copy(
             emailError = null,
             passwordError = null,
             usernameError = null,
-        )
+        ) }
 
         if (_authState.value is AuthState.Error) {
             _authState.value = AuthState.Unauthenticated
@@ -211,24 +211,30 @@ class AuthViewModel(
     }
 
     fun onEmailChange(email: String) {
-        _formState.value = _formState.value.copy(
-            email = email,
-            emailError = null
-        )
+        _formState.update {
+            it.copy(
+                email = email,
+                emailError = null
+            )
+        }
     }
 
     fun onPasswordChange(password: String) {
-        _formState.value = _formState.value.copy(
-            password = password,
-            passwordError = null
-        )
+        _formState.update {
+            it.copy(
+                password = password,
+                passwordError = null
+            )
+        }
     }
 
     fun onUsernameChange(username: String) {
-        _formState.value = _formState.value.copy(
-            username = username,
-            usernameError = null
-        )
+        _formState.update {
+            it.copy(
+                username = username,
+                usernameError = null
+            )
+        }
     }
 
 
@@ -282,45 +288,51 @@ class AuthViewModel(
     private fun handleAuthFailure(failure: AuthStatus.Failure) {
         val defaultMessage = "Произошла ошибка"
 
-        _formState.value = when (failure) {
-            is AuthStatus.Failure.EmailError -> {
-                _formState.value.copy(
-                    emailError = failure.message ?: defaultMessage,
-                    isLoading = false
-                )
-            }
-            is AuthStatus.Failure.UsernameError -> {
-                _formState.value.copy(
-                    usernameError = failure.message ?: defaultMessage,
-                    isLoading = false
-                )
-            }
-            is AuthStatus.Failure.PasswordError -> {
-                _formState.value.copy(
-                    passwordError = failure.message ?: defaultMessage,
-                    isLoading = false
-                )
-            }
-            is AuthStatus.Failure.GeneralError -> {
-                _formState.value.copy(
-                    emailError = failure.message ?: defaultMessage,
-                    passwordError = " ",
-                    usernameError = " ",
-                    isLoading = false
-                )
+        _formState.update {
+
+            when (failure) {
+                is AuthStatus.Failure.EmailError -> {
+                    it.copy(
+                        emailError = failure.message ?: defaultMessage,
+                        isLoading = false
+                    )
+                }
+
+                is AuthStatus.Failure.UsernameError -> {
+                    it.copy(
+                        usernameError = failure.message ?: defaultMessage,
+                        isLoading = false
+                    )
+                }
+
+                is AuthStatus.Failure.PasswordError -> {
+                    it.copy(
+                        passwordError = failure.message ?: defaultMessage,
+                        isLoading = false
+                    )
+                }
+
+                is AuthStatus.Failure.GeneralError -> {
+                    it.copy(
+                        emailError = failure.message ?: defaultMessage,
+                        passwordError = " ",
+                        usernameError = " ",
+                        isLoading = false
+                    )
+                }
             }
         }
-
         _authState.value = AuthState.Unauthenticated
     }
 
     private fun handleUnexpectedError(message: String) {
-        _formState.value = _formState.value.copy(
+        _formState.update {
+            it.copy(
             emailError = message,
             passwordError = " ",
             usernameError = " ",
             isLoading = false
-        )
+        ) }
         _authState.value = AuthState.Error(message)
     }
 }
