@@ -1,4 +1,4 @@
-package com.kiryha.noting.domain.usecase
+package com.kiryha.noting.domain.usecase.notes
 
 import com.kiryha.noting.domain.NoteRepository
 import com.kiryha.noting.domain.status.NoteStatus

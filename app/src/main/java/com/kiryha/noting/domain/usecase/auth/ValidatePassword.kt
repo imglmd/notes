@@ -1,6 +1,4 @@
-package com.kiryha.noting.domain.usecase
-
-import com.kiryha.noting.domain.usecase.ValidationResult
+package com.kiryha.noting.domain.usecase.auth
 
 class ValidatePassword {
     operator fun invoke(password: String): ValidationResult {

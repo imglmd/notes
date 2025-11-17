@@ -1,7 +1,6 @@
-package com.kiryha.noting.domain.usecase
+package com.kiryha.noting.domain.usecase.auth
 
 import android.util.Patterns
-import com.kiryha.noting.domain.usecase.ValidationResult
 
 class ValidateEmail {
     operator fun invoke(email: String): ValidationResult {

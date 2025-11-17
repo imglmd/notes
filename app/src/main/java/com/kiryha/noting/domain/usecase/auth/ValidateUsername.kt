@@ -1,4 +1,4 @@
-package com.kiryha.noting.domain.usecase
+package com.kiryha.noting.domain.usecase.auth
 
 class ValidateUsername {
     operator fun invoke(name: String): ValidationResult{

@@ -1,4 +1,4 @@
-package com.kiryha.noting.domain.usecase
+package com.kiryha.noting.domain.usecase.auth
 
 data class ValidationResult(
     val successful: Boolean,

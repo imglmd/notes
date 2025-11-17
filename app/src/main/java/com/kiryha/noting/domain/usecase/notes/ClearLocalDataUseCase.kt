@@ -1,9 +1,6 @@
-package com.kiryha.noting.domain.usecase
+package com.kiryha.noting.domain.usecase.notes
 
 import com.kiryha.noting.domain.NoteRepository
-import com.kiryha.noting.domain.model.User
-import com.kiryha.noting.domain.status.AuthStatus
-import com.kiryha.noting.domain.status.ResultWithStatus
 
 class ClearLocalDataUseCase(
     private val repository: NoteRepository

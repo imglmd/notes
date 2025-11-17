@@ -1,17 +1,15 @@
-package com.kiryha.noting.domain.usecase
+package com.kiryha.noting.domain.usecase.auth
 
-import android.util.Log
 import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.status.AuthStatus
 import com.kiryha.noting.domain.status.ResultWithStatus
-import com.kiryha.noting.presentation.screens.auth.AuthState
 import kotlinx.coroutines.delay
 
 class LoadUserUseCase(
     private val repository: AuthRepository
 ){
-    suspend operator fun invoke(): ResultWithStatus<User?, AuthStatus>{
+    suspend operator fun invoke(): ResultWithStatus<User?, AuthStatus> {
         var user: User? = null
         var attempts = 0
         val maxAttempts = 3

@@ -9,12 +9,13 @@ import com.kiryha.noting.data.source.local.NoteDatabase
 import com.kiryha.noting.data.source.network.NetworkDataSource
 import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.NoteRepository
-import com.kiryha.noting.domain.usecase.ClearLocalDataUseCase
-import com.kiryha.noting.domain.usecase.LoadUserUseCase
-import com.kiryha.noting.domain.usecase.SyncNotesUseCase
-import com.kiryha.noting.domain.usecase.ValidateEmail
-import com.kiryha.noting.domain.usecase.ValidatePassword
-import com.kiryha.noting.domain.usecase.ValidateUsername
+import com.kiryha.noting.domain.usecase.notes.ClearLocalDataUseCase
+import com.kiryha.noting.domain.usecase.notes.GroupNotesByMonthUseCase
+import com.kiryha.noting.domain.usecase.auth.LoadUserUseCase
+import com.kiryha.noting.domain.usecase.notes.SyncNotesUseCase
+import com.kiryha.noting.domain.usecase.auth.ValidateEmail
+import com.kiryha.noting.domain.usecase.auth.ValidatePassword
+import com.kiryha.noting.domain.usecase.auth.ValidateUsername
 import com.kiryha.noting.presentation.screens.auth.AuthViewModel
 import com.kiryha.noting.presentation.screens.notes.NoteViewModel
 import io.github.jan.supabase.SupabaseClient
@@ -100,6 +101,7 @@ val useCaseModule: Module = module {
             noteRepository = get()
         )
     }
+    factory { GroupNotesByMonthUseCase() }
 }
 
 val viewModelModule: Module = module {
@@ -118,7 +120,8 @@ val viewModelModule: Module = module {
     viewModel {
         NoteViewModel(
             repository = get(),
-            syncNotesUseCase = get()
+            syncNotesUseCase = get(),
+            groupNotesByMonthUseCase = get()
         )
     }
 }

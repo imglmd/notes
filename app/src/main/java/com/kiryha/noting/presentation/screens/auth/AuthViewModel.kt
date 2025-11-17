@@ -5,7 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.kiryha.noting.domain.AuthRepository
 import com.kiryha.noting.domain.model.User
 import com.kiryha.noting.domain.status.AuthStatus
-import com.kiryha.noting.domain.usecase.*
+import com.kiryha.noting.domain.usecase.auth.LoadUserUseCase
+import com.kiryha.noting.domain.usecase.auth.ValidateEmail
+import com.kiryha.noting.domain.usecase.auth.ValidatePassword
+import com.kiryha.noting.domain.usecase.auth.ValidateUsername
+import com.kiryha.noting.domain.usecase.notes.ClearLocalDataUseCase
+import com.kiryha.noting.domain.usecase.notes.SyncNotesUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

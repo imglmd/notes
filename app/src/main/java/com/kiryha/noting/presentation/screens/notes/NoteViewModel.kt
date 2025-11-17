@@ -7,7 +7,8 @@ import com.kiryha.noting.domain.model.Note
 import com.kiryha.noting.domain.model.NoteListItem
 import com.kiryha.noting.domain.status.NoteStatus
 import com.kiryha.noting.domain.status.ResultWithStatus
-import com.kiryha.noting.domain.usecase.SyncNotesUseCase
+import com.kiryha.noting.domain.usecase.notes.SyncNotesUseCase
+import com.kiryha.noting.domain.usecase.notes.GroupNotesByMonthUseCase
 import com.kiryha.noting.presentation.TestData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,13 +18,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class NoteViewModel(
     private val repository: NoteRepository,
-    private val syncNotesUseCase: SyncNotesUseCase
+    private val syncNotesUseCase: SyncNotesUseCase,
+    private val groupNotesByMonthUseCase: GroupNotesByMonthUseCase
 ) : ViewModel() {
 
     private val _searchText = MutableStateFlow("")
@@ -49,14 +48,14 @@ class NoteViewModel(
         } else {
             result.item.filter { it.doesMatchSearchQuery(text) }
         }
-        val groupedItems = groupNotesByMonth(filteredNotes)
+        val groupedItems = groupNotesByMonthUseCase(filteredNotes)
         ResultWithStatus(
             item = groupedItems,
             status = result.status
         )
     }.stateIn(
         viewModelScope,
-        SharingStarted.Companion.WhileSubscribed(5000),
+        SharingStarted.WhileSubscribed(5000),
         ResultWithStatus(emptyList(), NoteStatus.Success)
     )
 
@@ -175,50 +174,6 @@ class NoteViewModel(
             }
             _status.value = result.status
         }
-    }
-
-    private fun groupNotesByMonth(notes: List<Note>): List<NoteListItem> {
-        if (notes.isEmpty()) return emptyList()
-
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val monthYearFormat = SimpleDateFormat("yyyy-MM", Locale.getDefault())
-        val monthDisplayFormat = SimpleDateFormat("LLLL", Locale("en"))
-
-        val sortedNotes = notes.sortedByDescending {
-            try {
-                dateFormat.parse(it.date)?.time ?: 0
-            } catch (e: Exception) {
-                0L
-            }
-        }
-
-        val groupedMap = sortedNotes.groupBy { note ->
-            try {
-                val date = dateFormat.parse(note.date)
-                monthYearFormat.format(date ?: Date())
-            } catch (e: Exception) {
-                "unknown"
-            }
-        }
-
-        val result = mutableListOf<NoteListItem>()
-        groupedMap.forEach { (monthYear, notesInMonth) ->
-            val displayMonth = try {
-                val date = SimpleDateFormat("yyyy-MM", Locale.getDefault()).parse(monthYear)
-                monthDisplayFormat.format(date ?: Date()).replaceFirstChar { it.uppercase() }
-            } catch (e: Exception) {
-                "unknown"
-            }
-
-            if (notesInMonth.isNotEmpty()) {
-                result.add(NoteListItem.MonthHeader(month = displayMonth, key = monthYear))
-                notesInMonth.forEach { note ->
-                    result.add(NoteListItem.NoteItem(note))
-                }
-            }
-        }
-
-        return result
     }
 
     fun addTestNotes() {
